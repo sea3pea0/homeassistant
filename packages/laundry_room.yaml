@@ -1,0 +1,36 @@
+input_boolean:
+
+  laundry_room_auto:
+    name: Laundry Room Automation
+    initial: on
+    icon: mdi:home-automation
+
+automation:
+
+  - alias: Laundry Room Auto On
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.laundry_room_pir
+        from: "off"
+        to: "on"
+    condition:
+      - condition: state
+        entity_id: input_boolean.laundry_room_auto
+        state: "on"
+    action:
+      - service: light.turn_on
+        entity_id: light.laundry_room
+
+  - alias: Laundry Room Auto Off
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.laundry_room_occupancy
+        from: "on"
+        to: "off"
+    condition:
+      - condition: state
+        entity_id: input_boolean.laundry_room_auto
+        state: "on"
+    action:
+      - service: light.turn_off
+        entity_id: light.laundry_room

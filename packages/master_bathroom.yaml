@@ -1,0 +1,48 @@
+input_boolean:
+
+  master_bathroom_auto:
+    name: Master Bathroom Automation
+    initial: on
+    icon: mdi:home-automation
+
+automation:
+
+  - alias: Master Toilet Auto On
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.master_toilet_door
+        from: "on"
+        to: "off"
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.master_toilet_pir
+          state: "on"
+        - condition: template
+          value_template: "{{ utcnow() - states.binary_sensor.master_toilet_pir.last_changed < timedelta(seconds=10) }}"
+        - condition: state
+          entity_id: input_boolean.master_bathroom_auto
+          state: "on"
+    action:
+      - service: light.turn_on
+        entity_id: light.master_toilet
+
+  - alias: Master Toilet Auto Off Backup
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.master_toilet_occupancy
+        from: "on"
+        to: "off"
+        for:
+          minutes: 5
+    condition:
+      - condition: state
+        entity_id: input_boolean.master_bathroom_auto
+        state: "on"
+    action:
+      - service: light.turn_off
+        entity_id:
+          - light.master_toilet
+      - service: switch.turn_off
+        entity_id: switch.master_toilet_fan

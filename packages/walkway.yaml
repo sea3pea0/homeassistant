@@ -1,0 +1,36 @@
+group:
+
+  walkway_sensors:
+    name: Walkway Occupancy
+    entities:
+      - binary_sensor.side_walkway_occupancy
+      - binary_sensor.back_walkway_occupancy
+
+automation:
+
+  - alias: Walkway Motion
+    trigger:
+      - platform: state
+        from: "off"
+        to: "on"
+        entity_id: group.walkway_sensors
+    condition:
+      - condition: numeric_state
+        entity_id:
+          - sensor.side_walkway_illuminance
+        below: 50
+    action:
+      - service: light.turn_on
+        target:
+          entity_id: light.walkway
+
+  - alias: Walkway No Motion
+    trigger:
+      - platform: state
+        from: "on"
+        to: "off"
+        entity_id: group.walkway_sensors
+    action:
+      - service: light.turn_off
+        target:
+          entity_id: light.walkway

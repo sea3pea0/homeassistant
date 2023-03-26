@@ -1,0 +1,78 @@
+input_boolean:
+
+  bedroom_auto:
+    name: Bedroom Automation
+    initial: on
+    icon: mdi:home-automation
+
+mqtt:
+  switch:
+    - command_topic: shellies/shellyswitch25-E8DB84D6ED20/relay/0/command
+      name: Bedroom Shelly 1
+      payload_on: "on"
+      payload_off: "off"
+      qos: 1
+      state_topic: shellies/shellyswitch25-E8DB84D6ED20/relay/0
+      
+    - command_topic: shellies/shellyswitch25-E8DB84D6ED20/relay/1/command
+      name: Bedroom Shelly 2
+      payload_on: "on"
+      payload_off: "off"
+      qos: 1
+      state_topic: shellies/shellyswitch25-E8DB84D6ED20/relay/1
+
+automation:
+  - alias: Bedroom Fan Switch
+    trigger:
+      - platform: state
+        entity_id: switch.bedroom_shelly_1
+        to:
+    action:
+      - service: fan.toggle
+        entity_id: fan.bedroom
+
+  - alias: Bedroom Light Switch
+    trigger:
+      - platform: state
+        entity_id: switch.bedroom_shelly_2
+        to:
+    action:
+      - service: light.turn_on
+        entity_id: light.bedroom_fan
+      - service: light.toggle
+        entity_id: light.bedroom
+
+  - alias: Bedroom Fan Light On if Off
+    trigger:
+      - platform: state
+        entity_id: switch.bedroom_shelly_2
+        to:
+    condition:
+      condition: state
+      entity_id: light.bedroom_fan
+      state: "off"
+    action:
+      - service: light.turn_on
+        entity_id: light.bedroom_fan
+
+  - alias: Bedroom Auto Off
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.bedroom_occupancy
+        from: "off"
+        to: "on"
+        for:
+          minutes: 90
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: light.bedroom
+          state: "on"
+        - condition: state
+          entity_id: input_boolean.bedroom_auto
+          state: "on"
+    action:
+      - service: light.turn_off
+        entity_id: light.bedroom

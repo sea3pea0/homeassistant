@@ -1,0 +1,46 @@
+input_boolean:
+
+  hallway_auto:
+    name: Hallway Automation
+    initial: on
+    icon: mdi:home-automation
+
+mqtt:
+  switch:
+
+    - command_topic: "shellyplus1-a8032abe60dc/rpc"
+      name: "Hallway 1"
+      unique_id: "shellyplus1-a8032abe60dc-switch-0"
+      payload_on: '{"id": 1, "src":"homeassistant", "method": "Switch.Set", "params": {"id": 0, "on": true}}'
+      payload_off: '{"id": 1, "src":"homeassistant", "method": "Switch.Set", "params": {"id": 0, "on": false}}'
+      state_topic: "shellyplus1-a8032abe60dc/status/switch:0"
+      value_template: "{{ value_json.output }}"
+      state_on: true
+      state_off: false
+      qos: 1
+
+automation:
+
+  - alias: Hallway Switch 1
+    trigger:
+      - platform: state
+        entity_id: switch.hallway_1
+        to:
+    action:
+      - service: light.toggle
+        entity_id: light.hallway
+
+  - alias: Hallway Auto Off
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.hallway_occupancy
+        from: "on"
+        to: "off"
+    condition:
+      - condition: state
+        entity_id: input_boolean.hallway_auto
+        state: "on"
+    action:
+      - service: light.turn_off
+        entity_id: light.hallway

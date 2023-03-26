@@ -1,0 +1,11 @@
+sensor:
+
+  - platform: rest
+    name: Etherium Gas
+    json_attributes_path: $.result
+    json_attributes:
+      - SafeGasPrice
+      - FastGasPrice
+    resource: !secret eth_gas_url
+    value_template: "{{ value_json.result.ProposeGasPrice }}"
+    unit_of_measurement: gwei

@@ -1,0 +1,88 @@
+twilio:
+  account_sid: !secret twillio_sid
+  auth_token: !secret twillio_token
+
+notify:
+  - name: twilio_call
+    platform: twilio_call
+    from_number: !secret phone_5
+  - name: twilio_sms
+    platform: twilio_sms
+    from_number: !secret phone_5
+
+automation:
+  - alias: Twilio SMS Received
+    trigger:
+      platform: event
+      event_type: twilio_data_received
+      event_data:
+        To: !secret phone_4
+        SmsStatus: received
+    action:
+      service: telegram_bot.send_message
+      data_template:
+        message: >
+          💬 SMS Received From: {{trigger.event.data.From}}, Message: {{trigger.event.data.Body}}
+        target: !secret group1
+        message_tag: "{{trigger.event.data.From}}"
+
+script:
+  police_emergency:
+    sequence:
+      - service: notify.twilio_call
+        data:
+          message: "A police emergency request has been made from a panic button on an alarm system located at 15 2801 Poe pah ah Street, in the Hawaiian Shores Subdivision of Pahoa. Police emergency service is requested. The code word known only by residents at this address is Mauna Kay uh. Mobile contacts for the residents are as follows: Chris Rains, eight zero eight, two one seven, five six four two. Yulia Rains, eight zero eight, seven six nine, zero four zero seven."
+          target:
+            - 911
+      - service: notify.twilio_sms
+        data:
+          message: "A police emergency request has been made from an alarm keypad located at 15-2801 Popaa Street, in the Hawaiian Shores Subdivision of Pahoa. Police emergency service is requested. The code word known only by residents at this address is Mauna Kea. Mobile contacts for the residents are as follows: Chris Rains, (808) 217-5642. Yulia Rains, (808) 769-0407."
+          target:
+            - 911
+      - service: notify.twilio_sms
+        data:
+          message: "A police emergency request has been made from an alarm keypad located at 15-2801 Popaa Street, in the Hawaiian Shores Subdivision of Pahoa. Police emergency service is requested."
+          target:
+            - !secret phone_1
+            - !secret phone_2
+            - !secret phone_3
+
+  fire_emergency:
+    sequence:
+      - service: notify.twilio_call
+        data:
+          message: "A fire emergency request has been made from a panic button on an alarm system located at 15 2801 Poe pah ah Street, in the Hawaiian Shores Subdivision of Pahoa. Fire emergency service is requested. Mobile contacts for the residents are as follows: Chris Rains, eight zero eight, two one seven, five six four two. Yulia Rains, eight zero eight, seven six nine, zero four zero seven."
+          target:
+            - 911
+      - service: notify.twilio_sms
+        data:
+          message: "A fire emergency request has been made from a panic button on an alarm system located at 15-2801 Popaa Street, in the Hawaiian Shores Subdivision of Pahoa. Fire emergency service is requested. Mobile contacts for the residents are as follows: Chris Rains, (808) 217-5642. Yulia Rains, (808) 769-0407."
+          target:
+            - 911
+      - service: notify.twilio_sms
+        data:
+          message: "A fire emergency request has been made from a panic button on an alarm system located at 15-2801 Popaa Street, in the Hawaiian Shores Subdivision of Pahoa. Fire emergency service is requested."
+          target:
+            - !secret phone_1
+            - !secret phone_2
+            - !secret phone_3
+
+  medical_emergency:
+    sequence:
+      - service: notify.twilio_call
+        data:
+          message: "A medical emergency request has been made from a panic button on an alarm system located at 15 2801 Poe pah ah Street, in the Hawaiian Shores Subdivision of Pahoa. Medical emergency service is requested. Mobile contacts for the residents are as follows: Chris Rains, eight zero eight, two one seven, five six four two. Yulia Rains, eight zero eight, seven six nine, zero four zero seven."
+          target:
+            - 911
+      - service: notify.twilio_sms
+        data:
+          message: "A medical emergency request has been made from a panic button on an alarm system located at 15-2801 Popaa Street, in the Hawaiian Shores Subdivision of Pahoa. Medical emergency service is requested.  Mobile contacts for the residents are as follows: Chris Rains, (808) 217-5642. Yulia Rains, (808) 769-0407."
+          target:
+            - 911
+      - service: notify.twilio_sms
+        data:
+          message: "A medical emergency request has been made from a panic button on an alarm system located at 15-2801 Popaa Street, in the Hawaiian Shores Subdivision of Pahoa. Medical emergency service is requested."
+          target:
+            - !secret phone_1
+            - !secret phone_2
+            - !secret phone_3

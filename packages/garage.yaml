@@ -1,0 +1,276 @@
+input_boolean:
+
+  garage_auto:
+    name: Garage Automation
+    initial: on
+    icon: mdi:home-automation
+
+template:
+
+  - binary_sensor:
+
+      - name: "Garage PIR 2 Occupancy"
+        state: "{{ is_state('binary_sensor.garage_2_pir', 'on') }}"
+        delay_off: "00:07:00"
+        device_class: occupancy
+
+      - name: "Garage Door"
+        state: "{{ is_state('cover.garage_door', 'opening') or is_state('cover.garage_door', 'open') }}"
+        device_class: opening
+        icon: mdi:garage
+
+light:
+
+  - platform: switch
+    name: Garage
+    entity_id: switch.garage_light
+
+group:
+
+  garage_sensors:
+    name: Garage Occupancy
+    entities:
+      - binary_sensor.garage_pir_1_occupancy
+      - binary_sensor.garage_pir_2_occupancy
+
+automation:
+
+  - id: '1635056535387'
+    alias: Garage Auto On
+    trigger:
+      - platform: state
+        entity_id: group.garage_sensors
+        from: "off"
+        to: "on"
+      - platform: state
+        entity_id: binary_sensor.garage_back_lanai_door
+        from: "off"
+        to: "on"
+      - platform: state
+        entity_id: binary_sensor.garage_side_lanai_door
+        from: "off"
+        to: "on"
+      - platform: state
+        entity_id: binary_sensor.office_garage_door
+        from: "off"
+        to: "on"
+      - platform: state
+        entity_id: binary_sensor.garage_door
+        from: "off"
+        to: "on"
+    condition:
+      - condition: state
+        entity_id: input_boolean.garage_auto
+        state: "on"
+    action:
+      - service: light.turn_on
+        target:
+          entity_id: light.garage
+    mode: single
+
+  - id: '1635056679002'
+    alias: Garage Auto Off
+    trigger:
+      - platform: state
+        entity_id: group.garage_sensors
+        from: "on"
+        to: "off"
+      - platform: state
+        entity_id: cover.garage_door
+        to: "closed"
+        for:
+          hours: 0
+          minutes: 3
+          seconds: 0
+          milliseconds: 0
+      - platform: state
+        entity_id: binary_sensor.garage_back_lanai_door
+        from: "on"
+        to: "off"
+        for:
+          hours: 0
+          minutes: 3
+          seconds: 0
+          milliseconds: 0
+      - platform: state
+        entity_id: binary_sensor.garage_side_lanai_door
+        from: "on"
+        to: "off"
+        for:
+          hours: 0
+          minutes: 3
+          seconds: 0
+          milliseconds: 0
+      - platform: state
+        entity_id: binary_sensor.office_garage_door
+        from: "on"
+        to: "off"
+        for:
+          hours: 0
+          minutes: 3
+          seconds: 0
+          milliseconds: 0
+    condition:
+      - condition: state
+        entity_id: input_boolean.garage_auto
+        state: "on"
+      - condition: state
+        entity_id: binary_sensor.garage_door
+        state: "off"
+      - condition: state
+        entity_id: binary_sensor.garage_back_lanai_door
+        state: "off"
+        for:
+          hours: 0
+          minutes: 3
+          seconds: 0
+          milliseconds: 0
+      - condition: state
+        entity_id: binary_sensor.garage_side_lanai_door
+        state: "off"
+        for:
+          hours: 0
+          minutes: 3
+          seconds: 0
+          milliseconds: 0
+      - condition: state
+        entity_id: binary_sensor.office_garage_door
+        state: "off"
+        for:
+          hours: 0
+          minutes: 3
+          seconds: 0
+          milliseconds: 0
+      - condition: state
+        entity_id: group.garage_sensors
+        state: "off"
+    action:
+      - service: light.turn_off
+        target:
+          entity_id: light.garage
+    mode: single
+
+  - alias: "garage door opening"
+    trigger:
+      - platform: state
+        entity_id:
+          - cover.garage_door
+        to: "opening"
+    condition:
+      - condition: state
+        entity_id: input_boolean.notifications
+        state: "on"
+    action:
+      - service: notify.telegram
+        data_template:
+          message: "🚪 {{ trigger.to_state.name }} is opening!"
+      - condition: state
+        entity_id: group.people
+        state: "home"
+      - service: tts.cloud_say
+        data_template:
+          entity_id:
+            - media_player.pea_bathroom
+            - media_player.pea_kitchen
+            - media_player.pea_office
+            - media_player.pea_bedroom
+            - media_player.pea_master
+          message: "The Garage Door is opening"
+
+  - alias: "garage door closed"
+    trigger:
+      - platform: state
+        entity_id:
+          - cover.garage_door
+        from: "opening"
+        to: "closed"
+    condition:
+      - condition: state
+        entity_id: input_boolean.notifications
+        state: "on"
+    action:
+      - service: notify.telegram
+        data_template:
+          message: "🚪 {{ trigger.to_state.name }} is closed!"
+
+  - alias: "Telegram callback to close garage door"
+    trigger:
+      - platform: event
+        event_type: telegram_callback
+        event_data:
+          data: "/garage_close"
+    action:
+      - service: cover.close_cover
+        target:
+          entity_id: cover.garage_door
+
+  - alias: Turn Garage Door Alert on When Garage Closed
+    trigger:
+      - platform: state
+        entity_id: cover.garage_door
+        to: "closed"
+    action:
+      - service: alert.turn_on
+        target:
+          entity_id: alert.garage_door
+
+  - alias: "Telegram callback to stop alerts for garage door"
+    trigger:
+      - platform: event
+        event_type: telegram_callback
+        event_data:
+          data: "/garage_acknowledge"
+    action:
+      - service: alert.turn_off
+        target:
+          entity_id: alert.garage_door_left_open
+
+alert:
+
+  garage_door_left_open:
+    name: Garage Open
+    message: Garage Door is Open
+    done_message: Garage Door is closed
+    entity_id: cover.garage_door
+    state: "open"
+    repeat:
+      - 15
+      - 30
+      - 60
+    can_acknowledge: true
+    skip_first: true
+    data:
+      inline_keyboard:
+        - "Close garage:/garage_close, Acknowledge:/garage_acknowledge"
+    notifiers:
+      - telegram
+
+  garage_back_door_left_open:
+    name: Garage Back Door Left Open
+    message: Garage back door is still open
+    done_message: Garage back door is now closed
+    entity_id: binary_sensor.garage_back_lanai_door
+    state: "on"
+    repeat:
+      - 15
+      - 30
+      - 60
+    can_acknowledge: true
+    skip_first: true
+    notifiers:
+      - telegram
+
+  garage_side_door_left_open:
+    name: Garage Side Door Left Open
+    message: Garage side door is still open
+    done_message: Garage side door is now closed
+    entity_id: binary_sensor.garage_side_lanai_door
+    state: "on"
+    repeat:
+      - 15
+      - 30
+      - 60
+    can_acknowledge: true
+    skip_first: true
+    notifiers:
+      - telegram

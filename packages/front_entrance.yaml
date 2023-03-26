@@ -1,0 +1,24 @@
+input_boolean:
+
+  front_entrance_auto:
+    name: Front Entrance Automation
+    initial: on
+    icon: mdi:home-automation
+
+automation:
+
+  - alias: Front Entrance Auto Off
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.main_occupancy
+        from: "on"
+        to: "off"
+    condition:
+      - condition: state
+        entity_id: input_boolean.front_entrance_auto
+        state: "on"
+    action:
+      - service: light.turn_off
+        entity_id:
+          - light.front_entrance

@@ -1,0 +1,78 @@
+alarm_lights:
+  alias: Alarm Lights
+  sequence:
+  - service: input_select.select_option
+    data:
+      option: Police
+    target:
+      entity_id: input_select.sofa_light_effect
+  - repeat:
+      count: '100000'
+      sequence:
+      - service: light.turn_on
+        data:
+          color_name: red
+          brightness: 255
+        target:
+          entity_id: light.living_room_bulb_1
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 500
+      - service: light.turn_on
+        data:
+          color_name: blue
+          brightness: 253
+        target:
+          entity_id: light.living_room_bulb_2
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 500
+      - service: light.turn_on
+        data:
+          color_name: blue
+        target:
+          entity_id: light.living_room_bulb_1
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 500
+      - service: light.turn_on
+        data:
+          color_name: red
+          brightness: 255
+        target:
+          entity_id: light.living_room_bulb_2
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 500
+      - service: light.turn_on
+        data:
+          color_name: blue
+          brightness: 255
+        target:
+          entity_id: light.living_room_bulb_1
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 500
+      - service: light.turn_on
+        data:
+          color_name: red
+          brightness: 255
+        target:
+          entity_id: light.living_room_bulb_2
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 500
+  mode: single
+  icon: mdi:alarm-light

@@ -1,0 +1,31 @@
+automation:
+
+  - alias: "telegram power failure"
+    trigger:
+      - platform: event
+        event_type: nut.ups_event
+        event_data:
+          notify_type: ONBATT
+    condition:
+      - condition: state
+        entity_id: input_boolean.notifications
+        state: "on"
+    action:
+      - service: notify.telegram
+        data_template:
+          message: "⚡️ Power failure, systems running on battery power"
+
+  - alias: "telegram power restored"
+    trigger:
+      - platform: event
+        event_type: nut.ups_event
+        event_data:
+          notify_type: ONLINE
+    condition:
+      - condition: state
+        entity_id: input_boolean.notifications
+        state: "on"
+    action:
+      - service: notify.telegram
+        data_template:
+          message: "⚡️ Power restored, systems running on grid power"

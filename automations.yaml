@@ -1,0 +1,80 @@
+- id: '1665883600166'
+  alias: Office Keypad Automations
+  description: ''
+  use_blueprint:
+    path: ImSorryButWho/synchronize-ring-alarm-keypad-v2-with-alarmo.yaml
+    input:
+      keypad: 95aa4ff1b8df758bb2531c88f2efaa6a
+      alarm: alarm_control_panel.secure_home
+      selected_action_police:
+      - service: script.turn_on
+        data: {}
+        target:
+          entity_id: script.police_emergency
+      - service: alarm_control_panel.alarm_trigger
+        data:
+          code: !secret panic_code
+        target:
+          entity_id: alarm_control_panel.secure_home
+      selected_action_fire:
+      - service: script.turn_on
+        data: {}
+        target:
+          entity_id: script.fire_emergency
+      selected_action_medical:
+      - service: script.turn_on
+        data: {}
+        target:
+          entity_id: script.medical_emergency
+- id: '1665883705997'
+  alias: Bedroom Keypad Automations
+  description: ''
+  use_blueprint:
+    path: ImSorryButWho/synchronize-ring-alarm-keypad-v2-with-alarmo.yaml
+    input:
+      keypad: 577ddd2eaab3147f70955d9915828327
+      alarm: alarm_control_panel.secure_home
+      selected_action_police:
+      - service: script.turn_on
+        data: {}
+        target:
+          entity_id: script.police_emergency
+      - service: alarm_control_panel.alarm_trigger
+        data:
+          code: !secret panic_code
+      selected_action_fire:
+      - service: script.turn_on
+        data: {}
+        target:
+          entity_id: script.fire_emergency
+      selected_action_medical:
+      - service: script.turn_on
+        data: {}
+        target:
+          entity_id: script.medical_emergency
+- id: '1665883842004'
+  alias: Master Bedroom Keypad Automations
+  description: ''
+  use_blueprint:
+    path: ImSorryButWho/synchronize-ring-alarm-keypad-v2-with-alarmo.yaml
+    input:
+      keypad: 9497830c0d5f3fcce6a652b64a836af6
+      alarm: alarm_control_panel.secure_home
+      selected_action_police:
+      - service: script.police_emergency
+        data: {}
+      - service: alarm_control_panel.alarm_trigger
+        data:
+          code: !secret panic_code
+        target:
+          entity_id: alarm_control_panel.secure_home
+      selected_action_fire:
+      - service: script.turn_on
+        data: {}
+        target:
+          entity_id: script.fire_emergency
+      selected_action_medical:
+      - service: script.turn_on
+        data: {}
+        target:
+          entity_id: script.medical_emergency

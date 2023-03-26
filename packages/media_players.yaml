@@ -1,0 +1,281 @@
+binary_sensor:
+
+  - platform: template
+    sensors:
+      pea_tv:
+        friendly_name: Pea TV
+        value_template: >
+          {{ not is_state("media_player.pea_tv", "off") and not is_state("media_player.pea_tv", "standby") }}
+        delay_off: "00:20:00"
+
+group:
+
+  inside_players:
+    name: Inside Players
+    entities:
+      - media_player.pea_office
+      - media_player.pea_kitchen
+      - media_player.living_room_pair
+      - media_player.pea_master
+      - media_player.pea_bedroom
+      - media_player.bathroom_speaker
+
+  main_players:
+    name: Main Players
+    entities:
+      - media_player.pea_office
+      - media_player.pea_kitchen
+      - media_player.living_room_pair
+
+  bed_bath_players:
+    name: Bed & Bath Players
+    entities:
+      - media_player.pea_master
+      - media_player.pea_bedroom
+      - media_player.bathroom_speaker
+
+automation:
+
+  - alias: Set Inside Media Players Volume
+    trigger:
+      - platform: time
+        at: "00:00:00"
+      - platform: time
+        at: "05:00:00"
+      - platform: time
+        at: "09:00:00"
+      - platform: time
+        at: "17:00:00"
+      - platform: time
+        at: "20:00:00"
+      - platform: time
+        at: "22:00:00"
+    action:
+      - variables:
+          entity: >
+            {%- for media_player in expand("group.inside_players") -%}
+              {%- if loop.first -%}
+                [
+              {%- endif -%}
+                {%- if media_player.state == "off" -%}
+                  '{{media_player.entity_id}}'
+                  {%- if not loop.last -%}
+                    ,
+                  {%- endif -%}
+                {%- endif -%}
+            {%- if loop.last -%}
+              ]
+            {%- endif -%}
+            {%- endfor -%}
+      - service: script.turn_on
+        target:
+          entity_id: script.set_inside_media_players_volume
+        data:
+          variables:
+            entity: "{{entity}}"
+
+  - alias: Set Main Media Players Volume
+    trigger:
+      - platform: time
+        at: "00:00:00"
+      - platform: time
+        at: "05:00:00"
+      - platform: time
+        at: "09:00:00"
+      - platform: time
+        at: "17:00:00"
+      - platform: time
+        at: "20:00:00"
+      - platform: time
+        at: "22:00:00"
+    action:
+      - variables:
+          entity: >
+            {%- for media_player in expand("group.main_players") -%}
+              {%- if loop.first -%}
+                [
+              {%- endif -%}
+                {%- if media_player.state == "off" -%}
+                  '{{media_player.entity_id}}'
+                  {%- if not loop.last -%}
+                    ,
+                  {%- endif -%}
+                {%- endif -%}
+            {%- if loop.last -%}
+              ]
+            {%- endif -%}
+            {%- endfor -%}
+      - service: script.turn_on
+        target:
+          entity_id: script.set_inside_media_players_volume
+        data:
+          variables:
+            entity: "{{entity}}"
+
+  - alias: Set Bed and Bath Media Players Volume
+    trigger:
+      - platform: time
+        at: "00:00:00"
+      - platform: time
+        at: "05:00:00"
+      - platform: time
+        at: "09:00:00"
+      - platform: time
+        at: "17:00:00"
+      - platform: time
+        at: "20:00:00"
+      - platform: time
+        at: "22:00:00"
+    action:
+      - variables:
+          entity: >
+            {%- for media_player in expand("group.bed_bath_players") -%}
+              {%- if loop.first -%}
+                [
+              {%- endif -%}
+                {%- if media_player.state == "off" -%}
+                  '{{media_player.entity_id}}'
+                  {%- if not loop.last -%}
+                    ,
+                  {%- endif -%}
+                {%- endif -%}
+            {%- if loop.last -%}
+              ]
+            {%- endif -%}
+            {%- endfor -%}
+      - service: script.turn_on
+        target:
+          entity_id: script.set_bed_bath_media_players_volume
+        data:
+          variables:
+            entity: "{{entity}}"
+
+script:
+
+  set_media_players_volume:
+    sequence:
+      choose:
+        - alias: "Early Morning"
+          conditions:
+            - condition: time
+              after: "00:00:00"
+              before: "05:00:00"
+          sequence:
+            - service: media_player.volume_set
+              data_template:
+                entity_id: "{{entity}}"
+                volume_level: 0.1
+        - alias: "Morning"
+          conditions:
+            - condition: time
+              after: "05:00:00"
+              before: "09:00:00"
+          sequence:
+            - service: media_player.volume_set
+              data_template:
+                entity_id: "{{entity}}"
+                volume_level: 0.3
+        - alias: "Day"
+          conditions:
+            - condition: time
+              after: "09:00:00"
+              before: "17:00:00"
+          sequence:
+            - service: media_player.volume_set
+              data_template:
+                entity_id: "{{entity}}"
+                volume_level: 0.7
+        - alias: "Evening"
+          conditions:
+            - condition: time
+              after: "17:00:00"
+              before: "20:00:00"
+          sequence:
+            - service: media_player.volume_set
+              data_template:
+                entity_id: "{{entity}}"
+                volume_level: 0.4
+        - alias: "Night"
+          conditions:
+            - condition: time
+              after: "20:00:00"
+              before: "22:00:00"
+          sequence:
+            - service: media_player.volume_set
+              data_template:
+                entity_id: "{{entity}}"
+                volume_level: 0.3
+        - alias: "Late Night"
+          conditions:
+            - condition: time
+              after: "22:00:00"
+              before: "00:00:00"
+          sequence:
+            - service: media_player.volume_set
+              data_template:
+                entity_id: "{{entity}}"
+                volume_level: 0.2
+
+  set_bed_bath_media_players_volume:
+    sequence:
+      choose:
+        - alias: "Early Morning"
+          conditions:
+            - condition: time
+              after: "00:00:00"
+              before: "05:00:00"
+          sequence:
+            - service: media_player.volume_set
+              data_template:
+                entity_id: "{{entity}}"
+                volume_level: 0.1
+        - alias: "Morning"
+          conditions:
+            - condition: time
+              after: "05:00:00"
+              before: "09:00:00"
+          sequence:
+            - service: media_player.volume_set
+              data_template:
+                entity_id: "{{entity}}"
+                volume_level: 0.3
+        - alias: "Day"
+          conditions:
+            - condition: time
+              after: "09:00:00"
+              before: "17:00:00"
+          sequence:
+            - service: media_player.volume_set
+              data_template:
+                entity_id: "{{entity}}"
+                volume_level: 0.4
+        - alias: "Evening"
+          conditions:
+            - condition: time
+              after: "17:00:00"
+              before: "20:00:00"
+          sequence:
+            - service: media_player.volume_set
+              data_template:
+                entity_id: "{{entity}}"
+                volume_level: 0.4
+        - alias: "Night"
+          conditions:
+            - condition: time
+              after: "20:00:00"
+              before: "22:00:00"
+          sequence:
+            - service: media_player.volume_set
+              data_template:
+                entity_id: "{{entity}}"
+                volume_level: 0.2
+        - alias: "Late Night"
+          conditions:
+            - condition: time
+              after: "22:00:00"
+              before: "00:00:00"
+          sequence:
+            - service: media_player.volume_set
+              data_template:
+                entity_id: "{{entity}}"
+                volume_level: 0.1

@@ -1,0 +1,291 @@
+shell_command:
+  driveway_plate_record: /bin/bash -c "echo `date`'---{{ states.input_text.driveway_current_plate.state }}' >> /share/camera/plates.txt"
+
+group:
+
+  sirens:
+    name: Sirens
+    entities:
+      - switch.garage_siren
+      - siren.kitchen_trash_siren
+      - switch.attic_siren
+      - siren.laundry
+
+  main_pir:
+    name: Main Motion Sensors
+    entities:
+      - binary_sensor.office_pir
+      - binary_sensor.kitchen_pir
+      - binary_sensor.front_entrance_pir
+      - binary_sensor.side_entrance_pir
+      - binary_sensor.laundry_room_pir
+      - binary_sensor.living_room_pir
+  
+  windows:
+    name: Windows
+    entities:
+      - binary_sensor.front_left_window
+      - binary_sensor.front_right_window
+      - binary_sensor.bedroom_front_window
+      - binary_sensor.bedroom_side_window
+      - binary_sensor.kitchen_left_window
+      - binary_sensor.kitchen_right_window
+      - binary_sensor.laundry_room_window
+      - binary_sensor.master_toilet_window
+      - binary_sensor.bathroom_window
+      - binary_sensor.office_back_lanai_window
+      - binary_sensor.office_side_lanai_window
+      - binary_sensor.garage_street_front_window
+      - binary_sensor.garage_street_back_window
+      - binary_sensor.garage_walkway_front_window
+      - binary_sensor.garage_walkway_back_window
+      - binary_sensor.master_bathroom_side_window
+      - binary_sensor.master_bathroom_back_window
+
+  doors:
+    name: Doors
+    entities:
+      - binary_sensor.front_door
+      - binary_sensor.side_door
+      - binary_sensor.living_room_back_lanai_door
+      - binary_sensor.master_bedroom_back_lanai_door
+      - binary_sensor.office_garage_door
+      - binary_sensor.garage_back_lanai_door
+      - binary_sensor.garage_side_lanai_door
+
+automation:
+
+  - alias: telegram motion while away
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.bathroom_pir
+          - binary_sensor.bedroom_pir
+          - binary_sensor.garage_pir
+          - binary_sensor.front_entrance_pir
+          - binary_sensor.laundry_room_pir
+          - binary_sensor.hallway_pir
+          - binary_sensor.master_bedroom_pir
+          - binary_sensor.office_pir
+          - binary_sensor.side_entrance_pir
+          - binary_sensor.driveway_pir
+          - binary_sensor.front_lanai_1_pir
+          - binary_sensor.front_lanai_2_pir
+          - binary_sensor.front_lanai_3_pir
+          - binary_sensor.side_lanai_1_pir
+          - binary_sensor.side_lanai_2_pir
+          - binary_sensor.front_walkway_pir
+          - binary_sensor.kitchen_pir
+          - binary_sensor.master_bathroom_pir
+          - binary_sensor.shower_pir
+          - binary_sensor.master_toilet_pir
+          - binary_sensor.living_room_pir
+        from: "off"
+        to: "on"
+    condition:
+      - condition: state
+        entity_id: group.people
+        state: "not_home"
+    action:
+      - service: notify.telegram
+        data_template:
+          message: "🏃‍♂️ {{ trigger.to_state.name }} Detected"
+
+  # - alias: "telegram door or window open while people home"
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - binary_sensor.garage_back_lanai_door
+  #         - binary_sensor.garage_side_lanai_door
+  #         - binary_sensor.office_garage_door
+  #         - binary_sensor.front_door
+  #         - binary_sensor.living_room_back_lanai_door
+  #         - binary_sensor.master_bedroom_back_lanai_door
+  #         - binary_sensor.side_door
+  #         - binary_sensor.office_back_lanai_window
+  #         - binary_sensor.office_side_lanai_window
+  #         - binary_sensor.front_right_window
+  #         - binary_sensor.front_left_window
+  #         - binary_sensor.kitchen_right_window
+  #         - binary_sensor.kitchen_left_window
+  #         - binary_sensor.bedroom_front_window
+  #         - binary_sensor.bedroom_side_window
+  #         - binary_sensor.bathroom_window
+  #         - binary_sensor.bathroom_door
+  #         - binary_sensor.master_bathroom_back_window
+  #         - binary_sensor.master_bathroom_side_window
+  #         - binary_sensor.master_toilet_window
+  #         - binary_sensor.mater_toilet_door
+  #         - binary_sensor.master_bedroom_side_window
+  #         - binary_sensor.laundry_room_window
+  #         - binary_sensor.garage_street_front_window
+  #         - binary_sensor.garage_street_back_window
+  #         - binary_sensor.garage_walkway_front_window
+  #         - binary_sensor.garage_walkway_back_window
+  #       from: "off"
+  #       to: "on"
+  #   condition:
+  #     - condition: state
+  #       entity_id: input_boolean.notifications
+  #       state: "on"
+  #     - condition: state
+  #       entity_id: group.people
+  #       state: "home"
+  #   action:
+  #     - variables:
+  #         disable_notification: >
+  #           {% if is_state("group.people", "home") %}
+  #             true
+  #           {% else %}
+  #             false
+  #           {% endif %}
+  #         emoji: >
+  #           {% if "window" in trigger.to_state.entity_id %}
+  #             🖼
+  #           {% else %}
+  #             🚪
+  #           {% endif %}
+  #     - service: telegram_bot.send_message
+  #       data_template:
+  #         target: !secret group1
+  #         message: "{{emoji}} {{ trigger.to_state.name }} opened!"
+  #         disable_notification: "{{ disable_notification }}"
+
+  # - alias: "telegram door or window closed while people home"
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - binary_sensor.garage_back_lanai_door
+  #         - binary_sensor.garage_side_lanai_door
+  #         - binary_sensor.office_garage_door
+  #         - binary_sensor.front_door
+  #         - binary_sensor.living_room_back_lanai_door
+  #         - binary_sensor.master_bedroom_back_lanai_door
+  #         - binary_sensor.side_door
+  #         - binary_sensor.office_back_lanai_window
+  #         - binary_sensor.office_side_lanai_window
+  #         - binary_sensor.front_right_window
+  #         - binary_sensor.front_left_window
+  #         - binary_sensor.kitchen_right_window
+  #         - binary_sensor.kitchen_left_window
+  #         - binary_sensor.bedroom_front_window
+  #         - binary_sensor.bedroom_side_window
+  #         - binary_sensor.bathroom_window
+  #         - binary_sensor.bathroom_door
+  #         - binary_sensor.master_bathroom_back_window
+  #         - binary_sensor.master_bathroom_side_window
+  #         - binary_sensor.master_toilet_window
+  #         - binary_sensor.master_toilet_door
+  #         - binary_sensor.master_bedroom_side_window
+  #         - binary_sensor.laundry_room_window
+  #         - binary_sensor.garage_street_front_window
+  #         - binary_sensor.garage_street_back_window
+  #         - binary_sensor.garage_walkway_front_window
+  #         - binary_sensor.garage_walkway_back_window
+  #       from: "on"
+  #       to: "off"
+  #   condition:
+  #     - condition: state
+  #       entity_id: input_boolean.notifications
+  #       state: "on"
+  #     - condition: state
+  #       entity_id: group.people
+  #       state: "home"
+  #   action:
+  #     - variables:
+  #         disable_notification: >
+  #           {% if is_state("group.people", "home") %}
+  #             true
+  #           {% else %}
+  #             false
+  #           {% endif %}
+  #         emoji: >
+  #           {% if "window" in trigger.to_state.entity_id %}
+  #             🖼
+  #           {% else %}
+  #             🚪
+  #           {% endif %}
+  #     - service: telegram_bot.send_message
+  #       data_template:
+  #         target: !secret group1
+  #         message: "{{emoji}} {{ trigger.to_state.name }} closed!"
+  #         disable_notification: "{{disable_notification}}"
+
+  - alias: "camera disconnected"
+    trigger:
+      - platform: state
+        entity_id:
+          - device_tracker.back_walkway_camera
+          - device_tracker.driveway_camera
+          - device_tracker.front_lanai_camera
+          - device_tracker.front_pathway_camera
+          - device_tracker.side_garage_camera
+          - device_tracker.side_lanai_camera
+          - device_tracker.side_walkway_camera
+          - device_tracker.side_yard_camera
+          - device_tracker.back_yard_camera
+          - device_tracker.frigate
+        from: "home"
+        to: "not_home"
+    condition:
+      - condition: state
+        entity_id: input_boolean.notifications
+        state: "on"
+    action:
+      - service: telegram_bot.send_message
+        data_template:
+          target: !secret group1
+          message: "❌ {{ trigger.to_state.name }} disconnected!"
+          disable_notification: false
+
+  - alias: "camera connected"
+    trigger:
+      - platform: state
+        entity_id:
+          - device_tracker.back_walkway_camera
+          - device_tracker.driveway_camera
+          - device_tracker.front_lanai_camera
+          - device_tracker.front_pathway_camera
+          - device_tracker.side_garage_camera
+          - device_tracker.side_lanai_camera
+          - device_tracker.side_walkway_camera
+          - device_tracker.side_yard_camera
+          - device_tracker.back_yard_camera
+          - device_tracker.frigate
+        from: "not_home"
+        to: "home"
+    condition:
+      - condition: state
+        entity_id: input_boolean.notifications
+        state: "on"
+    action:
+      - service: telegram_bot.send_message
+        data_template:
+          target: !secret group1
+          message: "✅ {{ trigger.to_state.name }} connected!"
+          disable_notification: false
+
+  - alias: Day Time
+    trigger:
+      - platform: time
+        at: "06:00:00"
+    condition:
+      - condition: state
+        entity_id:
+          - group.people
+        state: "home"
+    action:
+      - service: input_boolean.turn_off
+        data:
+          entity_id:
+            - input_boolean.notify_lanai
+
+  - alias: Night Time
+    trigger:
+      - platform: time
+        at: "21:00:00"
+    action:
+      - service: input_boolean.turn_on
+        data:
+          entity_id:
+            - input_boolean.notify_lanai

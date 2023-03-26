@@ -1,0 +1,66 @@
+input_boolean:
+
+  front_lanai_auto:
+    name: Front Lanai Automation
+    initial: on
+    icon: mdi:home-automation
+
+group:
+
+  front_lanai_sensors:
+    name: Front Lanai Occupancy
+    entities:
+      - binary_sensor.side_lanai_1_occupancy
+      - binary_sensor.side_lanai_2_occupancy
+      - binary_sensor.front_lanai_1_occupancy
+      - binary_sensor.front_lanai_2_occupancy
+      - binary_sensor.front_lanai_3_occupancy
+
+automation:
+
+  - alias: Front Lanai Auto On
+    trigger:
+      - platform: state
+        entity_id: group.front_lanai_sensors
+        from: "off"
+        to: 'on'
+    condition:
+      - condition: state
+        entity_id: input_boolean.front_lanai_auto
+        state: "on"
+      - condition: or
+        conditions:
+          - condition: numeric_state
+            entity_id: sensor.front_lanai_1_illuminance
+            below: 5
+          - condition: numeric_state
+            entity_id: sensor.front_lanai_2_illuminance
+            below: 5
+          - condition: numeric_state
+            entity_id: sensor.front_lanai_3_illuminance
+            below: 5
+          - condition: numeric_state
+            entity_id: sensor.side_lanai_1_illuminance
+            below: 5
+          - condition: numeric_state
+            entity_id: sensor.side_lanai_2_illuminance
+            below: 3
+    action:
+      - service: light.turn_on
+        entity_id: light.front_lanai
+        data:
+          brightness: 255
+
+  - alias: Front Lanai Auto Off
+    trigger:
+      - platform: state
+        entity_id: group.front_lanai_sensors
+        from: "on"
+        to: 'off'
+    condition:
+      - condition: state
+        entity_id: input_boolean.front_lanai_auto
+        state: "on"
+    action:
+      - service: light.turn_off
+        entity_id: light.front_lanai

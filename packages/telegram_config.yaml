@@ -1,0 +1,50 @@
+telegram_bot:
+  - platform: webhooks
+    api_key: !secret telegram_api
+    parse_mode: html
+    trusted_networks:
+      - 149.154.160.0/20
+      - 91.108.4.0/22
+      - 127.0.0.1
+      
+    allowed_chat_ids:
+      - !secret chat1 # Sea3pea0
+      - !secret chat2 # Belka
+      - !secret group1 # Security Group
+      - !secret group2 # Archive Group
+
+notify:
+  - name: telegram
+    platform: telegram
+    chat_id: !secret group1
+
+  # - name: telegram_test
+  #   platform: telegram
+  #   chat_id: !secret group3
+# automation:
+#   - alias: Telegram Command Help
+#     trigger:
+#       - platform: event
+#         event_type: telegram_command
+#         event_data:
+#           command: '/help@cmarty_bot'
+#       - platform: event
+#         event_type: telegram_command
+#         event_data:
+#           command: '/help'
+#     action:
+#       - service: telegram_bot.send_message
+#         data_template:
+#           target:
+#             - "{{ trigger.event.data.chat_id }}"
+#           parse_mode: html
+#           disable_notification: true
+#           message: |
+#             <b>Commands Available:</b>
+
+#             <b>/arm</b>     -   Arm the Alarm System
+#             <b>/disarm</b>  -   Disarm The Alarm System
+#             <b>/clean</b>   -   Start Roomba Clean Cycle
+#             <b>/fan_on</b>  -   Turn Fan On
+#             <b>/fan_off</b> -   Turn Fan Off
+#             <b>/help</b>    -   Display this command list

@@ -1,0 +1,39 @@
+automation:
+
+  - alias: Bedroom Keypads 6H
+    description: ''
+    trigger:
+    - platform: time
+      at: "06:00:00"
+    action:
+      - service: zwave_js.set_config_parameter
+        data:
+          parameter: "4"
+          value: "100"
+        target:
+          device_id: 577ddd2eaab3147f70955d9915828327
+      - service: zwave_js.set_config_parameter
+        data:
+          parameter: "4"
+          value: "100"
+        target:
+          device_id: 9497830c0d5f3fcce6a652b64a836af6
+
+  - alias: Bedroom Keypads 19H
+    description: ''
+    trigger:
+    - platform: time
+      at: "06:00:00"
+    action:
+      - service: zwave_js.set_config_parameter
+        data:
+          parameter: "4"
+          value: "0"
+        target:
+          device_id: 577ddd2eaab3147f70955d9915828327
+      - service: zwave_js.set_config_parameter
+        data:
+          parameter: "4"
+          value: "0"
+        target:
+          device_id: 9497830c0d5f3fcce6a652b64a836af6

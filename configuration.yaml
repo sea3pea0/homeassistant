@@ -1,0 +1,112 @@
+homeassistant:
+  customize: !include customize.yaml
+  packages: !include_dir_named packages
+  allowlist_external_dirs:
+    - /media
+    - /share/camera
+    - /config/www/upcoming-media-card-images/plex/Recently_Added_Movie
+    - /config/www/upcoming-media-card-images/plex/Recently_Added_Show
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+http:
+  cors_allowed_origins:
+    - https://google.com
+    - https://www.home-assistant.io
+    - https://cast.home-assistant.io
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 192.168.1.6
+    - 172.30.33.0/24
+    - 127.0.0.1
+  ip_ban_enabled: true
+  login_attempts_threshold: 5
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+sensor: !include sensor.yaml
+
+device_tracker:
+  - platform: bluetooth_tracker
+    new_device_defaults:
+      track_new_devices: true
+
+
+recorder:
+  # db_url: !secret db_url
+
+# remote:
+#   - platform: itach
+#     host: itach_wifi_host
+#     devices:
+#       - name: Roomba
+#         connaddr: 3
+#         commands:
+#           - name: "CLEAN"
+#             data: "0000 0067 0000 0038 006F 0026 0024 0070 0023 0070 0023 0070 006C 0027 0024 0070 0023 0070 0023 030E 006F 0027 0024 0070 0023 0070 0023 0070 006C 0027 0024 0070 0023 0070 0023 030E 006F 0027 0024 0070 0023 0070 0023 0070 006C 0027 0024 0070 0023 0070 0023 030E 006F 0026 0024 0070 0023 0070 0023 0070 006C 0027 0024 0070 0023 0070 0023 0317 006F 0027 0024 0070 0023 0070 0023 0070 006C 0027 0024 0070 0023 0070 0023 030E 006F 0027 0024 0070 0023 0070 0023 0070 006C 0027 0024 0070 0023 0070 0023 030E 006F 0027 0024 0070 0023 0070 0023 0070 006C 0027 0024 0070 0023 0070 0023 0F3C"
+
+ffmpeg:
+
+stream:
+  ll_hls: true
+
+logger:
+  default: info
+  logs:
+    homeassistant.core: debug
+    homeassistant.components.zha: debug
+    bellows.zigbee.application: debug
+    bellows.ezsp: debug
+    zigpy: debug
+    zigpy_deconz.zigbee.application: debug
+    zigpy_deconz.api: debug
+    zigpy_xbee.zigbee.application: debug
+    zigpy_xbee.api: debug
+    zigpy_zigate: debug
+    zigpy_znp: debug
+    zhaquirks: debug
+
+# light:
+#   - platform: group
+#     name: Sofa
+#     entities:
+#       - light.sofa_red
+#       - light.sofa_blue
+#       - light.sofa_green
+
+influxdb:
+  host: !secret influx_ip
+  port: !secret influx_port
+  api_version: 2
+  ssl: false
+  # database: !secret influx_db
+  # username: !secret influx_user
+  # password: !secret influx_pass
+  token: !secret influx_token
+  organization: !secret influx_org
+  bucket: !secret influx_bucket
+  max_retries: 3
+  default_measurement: state
+  exclude:
+    entities:
+      - sensor.time
+      - sensor.date
+    domains:
+      - automation
+
+media_source:
+
+zha:
+  zigpy_config:
+    network:
+      channel: 25             # What channel the radio should try to use.
+      channels: [15, 20, 25]
+
+wake_on_lan:

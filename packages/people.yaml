@@ -1,0 +1,151 @@
+group:
+
+  people:
+    name: People
+    entities:
+      - person.sea3pea0
+      - person.belka
+
+automation:
+
+  - alias: "Person Home"
+    trigger:
+      - platform: state
+        entity_id:
+          - person.sea3pea0
+          - person.belka
+          - person.karin
+        from: "not_home"
+        to: "home"
+    condition:
+      - condition: state
+        entity_id: input_boolean.notifications
+        state: "on"
+    action:
+      - service: telegram_bot.send_message
+        data_template:
+          target: !secret group1
+          message: "🛬 {{ trigger.to_state.name }} arrived at home!"
+          disable_notification: false
+
+  - alias: "Person Away"
+    trigger:
+      - platform: state
+        entity_id:
+          - person.sea3pea0
+          - person.belka
+          - person.karin
+        from: "home"
+        to: "not_home"
+    condition:
+      - condition: state
+        entity_id: input_boolean.notifications
+        state: "on"
+    action:
+      - service: telegram_bot.send_message
+        data_template:
+          target: !secret group1
+          message: "🛫 {{ trigger.to_state.name }} departed home!"
+          disable_notification: false
+
+
+  # - alias: People Arrive - Disarm Alarm
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - person.sea3pea0
+  #         - person.belka
+  #         - person.karin
+  #       to: "home"
+  #   condition:
+  #     condition: and
+  #     conditions:
+  #       - condition: state
+  #         entity_id: alarm_control_panel.alarm
+  #         state: "armed_away"
+  #   action:
+  #     - service: alarm_control_panel.alarm_disarm
+  #       data:
+  #         entity_id: alarm_control_panel.alarm
+  #         code: !secret alarm_code
+
+  - alias: People Home Day
+    trigger:
+      - platform: state
+        entity_id: group.people
+        from: "not_home"
+        to: "home"
+    condition:
+      - condition: time
+        after: "06:00:00"
+      - condition: time
+        before: "20:00:00"
+    action:
+      - service: input_boolean.turn_off
+        data:
+          entity_id:
+            - input_boolean.notify_lanai
+
+  - alias: People Home Night
+    trigger:
+      - platform: state
+        entity_id: group.people
+        from: "not_home"
+        to: "home"
+    condition:
+      - condition: time
+        after: "20:00:00"
+      - condition: time
+        before: "09:00:00"
+    action:
+      - service: input_boolean.turn_off
+        data:
+          entity_id:
+            - input_boolean.notify_lanai
+            - input_boolean.notify_pir_lanai
+
+  - alias: People Away
+    trigger:
+      - platform: state
+        entity_id: group.people
+        from: "home"
+        to: "not_home"
+    action:
+      - service: input_boolean.turn_on
+        data:
+          entity_id:
+            - input_boolean.notify_lanai
+      - service: fan.turn_off
+        target:
+          entity_id:
+            - fan.back_lanai
+            - fan.bedroom
+            - fan.living_room
+            - fan.master_bedroom
+            - fan.office
+
+  # - alias: telegram people left home - Ask if alarm should be armed
+  #   trigger:
+  #     - platform: state
+  #       entity_id: group.people
+  #       to: "not_home"
+  #   condition:
+  #     - condition: state
+  #       entity_id: input_boolean.notifications
+  #       state: "on"
+  #   action:
+  #     - service: notify.telegram
+  #       data_template:
+  #         message: >-
+  #           🏭 Everyone has left home
+  #           {%- if is_state("group.doors", "on") or is_state("group.windows", "on") -%}
+  #           {% for state in expand("group.windows","group.doors","cover.garage_door") if not state.state == "off" and not state.state == "closed" %}
+  #             {%- if loop.first %}. The {% elif loop.last %} and the {% else %}, the {% endif -%}
+  #             {{ state.name }} is {% if state.state == "on" %}{%- set status = "open" -%}{%- else -%}{%- set status = state.state -%}{%- endif -%}{{ status }}
+  #           {%- endfor %}.
+  #           {%- else -%}
+  #           .
+  #           {%- endif -%}
+  #         data:
+  #           inline_keyboard:
+  #             - "Arm the Alarm System:/arm, Dismiss:/dismiss"

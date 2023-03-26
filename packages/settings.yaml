@@ -1,0 +1,153 @@
+input_select:
+  selected_camera:
+    name: Selected Camera
+    options:
+      - Driveway
+      - Front Lanai
+      - Front Pathway
+      - Side Garage
+      - Side Lanai
+      - Side Walkway
+      - Side Yard
+      - Back Walkway
+      - Back Yard
+      - None
+    icon: mdi:cctv
+    initial: "None"
+
+input_boolean:
+  notify_tv:
+    name: TV Notifications
+    initial: on
+    icon: mdi:android-messages
+
+  notify_tts:
+    name: Speech Notifications
+    initial: on
+    icon: mdi:android-messages
+
+  notify_kitchen:
+    name: Kitchen Notifications
+    initial: off
+    icon: mdi:google-home
+
+  notify_office:
+    name: Office Notifications
+    initial: off
+    icon: mdi:google-home
+
+  notify_master:
+    name: Master Bedroom Notifications
+    initial: off
+    icon: mdi:google-home
+
+  notify_bathroom:
+    name: Bathroom Notifications
+    initial: off
+    icon: mdi:google-home
+
+  notify_telegram:
+    name: Telegram Notifications
+    initial: on
+    icon: mdi:message
+
+  notify_walkway:
+    initial: on
+    name: "Walkway Notifications"
+  notify_driveway:
+    initial: on
+    name: "Driveway Notifications"
+  notify_lanai:
+    initial: off
+    name: "Lanai Notifications"
+  notify_yard:
+    initial: on
+    name: "Yard Notifications"
+  notify_street:
+    initial: off
+    name: "Street Notifications"
+  notify_culdesac:
+    initial: on
+    name: "Culdesac Notifications"
+  # notify_noise:
+  #   initial: on
+  #   name: "Noise Notifications"
+  # notify_connectivity:
+  #   initial: on
+  #   name: "Connectivity Notifications"
+  # notify_pir_motion_driveway:
+  #   initial: on
+  #   name: "Driveway Motion Sensor Notifications"
+  # notify_pir_motion_yard:
+  #   initial: on
+  #   name: "Yard Motion Sensor Notifications"
+  # notify_pir_motion_walkway:
+  #   initial: on
+  #   name: "Walkway Motion Sensor Notifications"
+  # notify_pir_motion_lanai:
+  #   initial: on
+  #   name: "Lanai Motion Sensor Notifications"
+  # notify_camera_motion:
+  #   initial: off
+  #   name: "Camera Motion Notifications"
+  notify_cat:
+    initial: off
+    name: "Cat Notifications"
+  notify_dog:
+    initial: off
+    name: "Dog Notifications"
+  notify_person:
+    initial: on
+    name: "Person Notifications"
+  notify_car:
+    initial: on
+    name: "Car Notifications"
+  notify_truck:
+    initial: on
+    name: "Truck Notifications"
+  notify_bus:
+    initial: on
+    name: "Bus Notifications"
+  notify_motorcycle:
+    initial: on
+    name: "Motorcycle Notifications"
+  notify_bicycle:
+    initial: on
+    name: "Bicycle Notifications"
+  # notify_chris:
+  #   initial: on
+  #   name: "Chris Notifications"
+  # notify_yulia:
+  #   initial: on
+  #   name: "Yulia Notifications"
+  # notify_cassidy:
+  #   initial: on
+  #   name: "Cassidy Notifications"
+  # notify_karin:
+  #   initial: on
+  #   name: "Karin Notifications"
+  # notify_kurt:
+  #   initial: on
+  #   name: "Kurt Notifications"
+  # notify_sea_prius:
+  #   initial: on
+  #   name: "Sea Prius Notifications"
+  # notify_grandmas_car:
+  #   initial: on
+  #   name: "Grandmas Car Notifications"
+
+  # blue_iris:
+  #   initial: on
+
+  notifications:
+    name: All Notifications
+    icon: mdi:bell
+    initial: on
+
+input_text:
+  current_camera_stream:
+    initial: "none"
+
+timer:
+  display_stop:
+    duration: "00:00:45"

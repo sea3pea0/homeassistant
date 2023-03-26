@@ -1,0 +1,33 @@
+automation:
+  - alias: 3D Printer Power
+    trigger:
+      - platform: mqtt
+        topic: octoPrint/3dprinter_power
+        payload: "on"
+      - platform: mqtt
+        topic: octoPrint/3dprinter_power
+        payload: "off"
+    action:
+      - service: >
+          {% if trigger.payload == "on" %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        data:
+          entity_id: light.ender_3_v2_3d_printer_on_off
+  - alias: Print Finished
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.octoprint_printing
+        from: "on"
+        to: "off"
+    action:
+      - service: notify.pea_tv
+        data_template:
+          title: "3D Printer"
+          message: Job finished
+          data:
+            interrupt: 1
+            timeout: 25

@@ -1,0 +1,75 @@
+input_boolean:
+
+  bathroom_auto:
+    name: Bathroom Automation
+    initial: on
+    icon: mdi:home-automation
+
+automation:
+
+  - alias: Shower Motion
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.shower_pir
+        from: "off"
+        to: "on"
+    action:
+      - service: light.turn_on
+        entity_id: light.shower
+
+  - alias: Bathroom Automatic On
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.bathroom_door
+        from: "on"
+        to: "off"
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.bathroom_pir
+          state: "on"
+        - condition: template
+          value_template: "{{ utcnow() - states.binary_sensor.bathroom_pir.last_changed < timedelta(seconds=15) }}"
+        - condition: state
+          entity_id: input_boolean.bathroom_auto
+          state: "on"
+    action:
+      - service: light.turn_on
+        entity_id: light.bathroom
+
+  - alias: Bathroom Auto Off Backup
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.bathroom_occupancy
+        from: "on"
+        to: "off"
+        for:
+          minutes: 5
+      - platform: state
+        entity_id: binary_sensor.shower_occupancy
+        from: "on"
+        to: "off"
+        for:
+          minutes: 5
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.shower_occupancy
+          state: "on"
+          for:
+            minutes: 5
+        - condition: state
+          entity_id: binary_sensor.bathroom_occupancy
+          state: "on"
+          for:
+            minutes: 5
+        - condition: state
+          entity_id: input_boolean.bathroom_auto
+          state: "on"
+    action:
+      - service: light.turn_off
+        entity_id:
+          - light.bathroom
+          - light.shower

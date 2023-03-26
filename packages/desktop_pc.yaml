@@ -1,0 +1,9 @@
+mqtt:
+  binary_sensor:
+    - state_topic: "iotlink/workgroup/desktop-m4b9eqo/lwt"
+      name: "Desktop PC - Connected"
+      value_template: "{{ value }}"
+      payload_on: "ON"
+      payload_off: "OFF"
+      device_class: "connectivity"
+      qos: 1

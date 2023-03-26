@@ -1,0 +1,88 @@
+light.ender_3_v2_3d_printer_on_off:
+  icon: mdi:printer-3d
+binary_sensor.lumi_lumi_sensor_magnet_aq2_on_off:
+  device_class: window
+binary_sensor.bedroom_lanai_door:
+  device_class: door
+binary_sensor.garage_back_lanai_door:
+  device_class: door
+binary_sensor.main_lanai_door:
+  device_class: door
+binary_sensor.office_lanai_window:
+  device_class: window
+binary_sensor.garage_side_lanai_door:
+  device_class: door
+binary_sensor.office_back_lanai_window:
+  device_class: window
+binary_sensor.master_bedroom_lanai_door:
+  device_class: door
+binary_sensor.office_side_lanai_window:
+  device_class: window
+switch.garage_siren:
+  icon: mdi:bell
+switch.kitchen_trash_siren:
+  icon: mdi:bell
+camera.blueiris_all_cameras:
+  friendly_name: All Cameras
+camera.blueiris_all_cameras_cycle:
+  friendly_name: All Cameras Cycle
+camera.blueiris_back_entrance:
+  friendly_name: Back Entrance Camera
+camera.blueiris_back_left:
+  friendly_name: Back Left Camera
+camera.blueiris_banana:
+  friendly_name: Banana Camera
+camera.blueiris_popaa_street:
+  friendly_name: Popaa Street Camera
+camera.blueiris_puna_parkway:
+  friendly_name: Puna Parkway Camera
+camera.blueiris_side_lanai:
+  friendly_name: Side Lanai Camera
+binary_sensor.office_door:
+  device_class: door
+binary_sensor.garage_office_door:
+  device_class: door
+binary_sensor.front_right_window:
+  device_class: window
+binary_sensor.bathroom_window:
+  device_class: window
+binary_sensor.bedroom_front_window:
+  device_class: window
+binary_sensor.bedroom_side_window:
+  device_class: window
+binary_sensor.front_left_window:
+  device_class: window
+binary_sensor.kitchen_corner_left_window:
+  device_class: window
+binary_sensor.kitchen_corner_right_window:
+  device_class: window
+binary_sensor.laundry_room_window:
+  device_class: window
+binary_sensor.master_back_window:
+  device_class: window
+binary_sensor.master_bathroom_window:
+  device_class: window
+binary_sensor.master_bed_side_window:
+  device_class: window
+binary_sensor.master_side_window:
+  device_class: window
+switch.master_bathroom_fan:
+  icon: mdi:fan
+binary_sensor.garage_street_back_window:
+  device_class: window
+binary_sensor.garage_street_front_window:
+  device_class: window
+binary_sensor.garage_walkway_back_window:
+  device_class: window
+binary_sensor.garage_walkway_front_window:
+  device_class: window
+switch.master_toilet_fan:
+  icon: mdi:fan
+binary_sensor.master_bathroom_back_window:
+  device_class: window
+binary_sensor.master_bathroom_side_window:
+  device_class: window
+binary_sensor.master_bedroom_side_window:
+  device_class: window
+binary_sensor.master_toilet_window:
+  device_class: window

@@ -1,0 +1,44 @@
+input_boolean:
+
+  driveway_auto:
+    name: Driveway Automation
+    initial: on
+    icon: mdi:home-automation
+
+automation:
+
+  - alias: Driveway Auto On
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.driveway_pir
+        from: "off"
+        to: "on"
+    condition:
+      - condition: numeric_state
+        entity_id:
+          - sensor.driveway_illuminance
+        below: 10
+      - condition: state
+        entity_id: input_boolean.driveway_auto
+        state: "on"
+    action:
+      - service: light.turn_on
+        entity_id: light.driveway
+        data:
+          brightness: 255
+
+  - alias: Driveway Auto Off
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.driveway_occupancy
+        from: "on"
+        to: 'off'
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.driveway_auto
+          state: "on"
+    action:
+      - service: light.turn_off
+        entity_id: light.driveway

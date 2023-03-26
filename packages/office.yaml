@@ -1,0 +1,107 @@
+input_boolean:
+
+  office_auto:
+    name: Office Automation
+    initial: on
+    icon: mdi:home-automation
+
+mqtt:
+  switch:
+
+    - command_topic: "shellies/shellyswitch25-E8DB84A241EE/relay/0/command"
+      name: Office 1
+      unique_id: "shellyswitch25-E8DB84A241EE-switch-0"
+      payload_on: "on"
+      payload_off: "off"
+      qos: 1
+      state_topic: "shellies/shellyswitch25-E8DB84A241EE/relay/0"
+      json_attributes_topic: "shellies/shellyswitch25-E8DB84A241EE/info"
+    - command_topic: "shellies/shellyswitch25-E8DB84A241EE/relay/1/command"
+      name: Office 2
+      unique_id: "shellyswitch25-E8DB84A241EE-switch-1"
+      payload_on: "on"
+      payload_off: "off"
+      qos: 1
+      state_topic: "shellies/shellyswitch25-E8DB84A241EE/relay/1"
+      json_attributes_topic: "shellies/shellyswitch25-E8DB84A241EE/info"
+    - command_topic: shellies/shelly1pm-84CCA89F8756/relay/0/command
+      name: Office 3
+      unique_id: "shelly1pm-84CCA89F8756-switch-0"
+      payload_on: "on"
+      payload_off: "off"
+      qos: 1
+      state_topic: shellies/shelly1pm-84CCA89F8756/relay/0
+      json_attributes_topic: "shellies/shelly1pm-84CCA89F8756/info"
+
+automation:
+  - alias: Office Fan Switch
+    trigger:
+      - platform: state
+        entity_id: switch.office_2
+        to:
+    action:
+      - service: fan.toggle
+        entity_id: fan.office
+
+  - alias: Office Light Switches Switch
+    trigger:
+      - platform: state
+        entity_id: switch.office_3
+        to:
+      - platform: state
+        entity_id: switch.office_1
+        to:
+    action:
+      - service: light.toggle
+        entity_id: light.office
+
+  - alias: Office Auto On
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.office_pir
+        from: "off"
+        to : "on"
+    condition:
+      condition: and
+      conditions:
+        - condition: sun
+          after: sunset
+          after_offset: "-00:20:00"
+        - condition: time
+          before: "20:00:00"
+        - condition: state
+          entity_id: input_boolean.office_auto
+          state: "on"
+    action:
+      - service: light.turn_on
+        entity_id: light.office
+
+  - alias: Office Auto Off
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.office_occupancy
+        from: "on"
+        to: "off"
+      - platform: state
+        entity_id:
+          - binary_sensor.desktop_pc_connected
+        from: "on"
+        to: "off"
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.desktop_pc_connected
+          state: "off"
+        - condition: state
+          entity_id: binary_sensor.office_occupancy
+          state: "off"
+        - condition: state
+          entity_id: input_boolean.office_auto
+          state: "on"
+    action:
+      - service: light.turn_off
+        entity_id:
+          - light.office
