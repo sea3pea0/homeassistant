@@ -1,14 +1,11 @@
 input_boolean:
-
   garage_auto:
     name: Garage Automation
     initial: on
     icon: mdi:home-automation
 
 template:
-
   - binary_sensor:
-
       - name: "Garage PIR 2 Occupancy"
         state: "{{ is_state('binary_sensor.garage_2_pir', 'on') }}"
         delay_off: "00:07:00"
@@ -20,13 +17,11 @@ template:
         icon: mdi:garage
 
 light:
-
   - platform: switch
     name: Garage
     entity_id: switch.garage_light
 
 group:
-
   garage_sensors:
     name: Garage Occupancy
     entities:
@@ -34,8 +29,7 @@ group:
       - binary_sensor.garage_pir_2_occupancy
 
 automation:
-
-  - id: '1635056535387'
+  - id: "1635056535387"
     alias: Garage Auto On
     trigger:
       - platform: state
@@ -68,7 +62,7 @@ automation:
           entity_id: light.garage
     mode: single
 
-  - id: '1635056679002'
+  - id: "1635056679002"
     alias: Garage Auto Off
     trigger:
       - platform: state
@@ -113,10 +107,14 @@ automation:
     condition:
       - condition: state
         entity_id: input_boolean.garage_auto
-        state: "on"
+        state:
+          - "off"
+          - "unavailable"
       - condition: state
         entity_id: binary_sensor.garage_door
-        state: "off"
+        state:
+          - "off"
+          - "unavailable"
       - condition: state
         entity_id: binary_sensor.garage_back_lanai_door
         state: "off"
@@ -127,7 +125,9 @@ automation:
           milliseconds: 0
       - condition: state
         entity_id: binary_sensor.garage_side_lanai_door
-        state: "off"
+        state:
+          - "off"
+          - "unavailable"
         for:
           hours: 0
           minutes: 3
@@ -135,7 +135,9 @@ automation:
           milliseconds: 0
       - condition: state
         entity_id: binary_sensor.office_garage_door
-        state: "off"
+        state:
+          - "off"
+          - "unavailable"
         for:
           hours: 0
           minutes: 3
@@ -143,7 +145,9 @@ automation:
           milliseconds: 0
       - condition: state
         entity_id: group.garage_sensors
-        state: "off"
+        state:
+          - "off"
+          - "unavailable"
     action:
       - service: light.turn_off
         target:
@@ -226,7 +230,6 @@ automation:
           entity_id: alert.garage_door_left_open
 
 alert:
-
   garage_door_left_open:
     name: Garage Open
     message: Garage Door is Open

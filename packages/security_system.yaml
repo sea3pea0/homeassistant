@@ -2,7 +2,6 @@ shell_command:
   driveway_plate_record: /bin/bash -c "echo `date`'---{{ states.input_text.driveway_current_plate.state }}' >> /share/camera/plates.txt"
 
 group:
-
   sirens:
     name: Sirens
     entities:
@@ -20,7 +19,7 @@ group:
       - binary_sensor.side_entrance_pir
       - binary_sensor.laundry_room_pir
       - binary_sensor.living_room_pir
-  
+
   windows:
     name: Windows
     entities:
@@ -28,8 +27,8 @@ group:
       - binary_sensor.front_right_window
       - binary_sensor.bedroom_front_window
       - binary_sensor.bedroom_side_window
-      - binary_sensor.kitchen_left_window
-      - binary_sensor.kitchen_right_window
+      - binary_sensor.kitchen_front_window
+      - binary_sensor.kitchen_side_window
       - binary_sensor.laundry_room_window
       - binary_sensor.master_toilet_window
       - binary_sensor.bathroom_window
@@ -54,7 +53,6 @@ group:
       - binary_sensor.garage_side_lanai_door
 
 automation:
-
   - alias: telegram motion while away
     trigger:
       - platform: state
