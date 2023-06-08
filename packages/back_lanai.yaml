@@ -1,5 +1,4 @@
 input_boolean:
-
   back_lanai_auto:
     name: Back Lanai Automation
     initial: on
@@ -7,17 +6,6 @@ input_boolean:
 
 mqtt:
   switch:
-    - command_topic: "shellyplus1-a8032abc2b68/rpc"
-      name: "Living Room 2"
-      unique_id: "shellyplus1-a8032abc2b68-switch-0"
-      payload_on: '{"id": 1, "src":"homeassistant", "method": "Switch.Set", "params": {"id": 0, "on": true}}'
-      payload_off: '{"id": 1, "src":"homeassistant", "method": "Switch.Set", "params": {"id": 0, "on": false}}'
-      state_topic: "shellyplus1-a8032abc2b68/status/switch:0"
-      value_template: "{{ value_json.output }}"
-      state_on: true
-      state_off: false
-      qos: 1
-
     - command_topic: "shellyplus1-a8032abb4b0c/rpc"
       name: "Garage 1"
       unique_id: "shellyplus1-a8032abb4b0c-switch-0"
@@ -29,20 +17,11 @@ mqtt:
       state_off: false
       qos: 1
 
-    - command_topic: "shellies/shellyswitch25-E8DB84A27568/relay/0/command"
-      name: Living Room 3
-      unique_id: "shellyswitch25-E8DB84A27568-switch-0"
-      payload_on: "on"
-      payload_off: "off"
-      qos: 1
-      state_topic: "shellies/shellyswitch25-E8DB84A27568/relay/0"
-      json_attributes_topic: "shellies/shellyswitch25-E8DB84A27568/info"
-
 automation:
   - alias: Back Lanai Fan Switch 1
     trigger:
       - platform: state
-        entity_id: switch.back_lanai_1
+        entity_id: light.living_room_2
         to:
     action:
       - service: fan.toggle
@@ -51,7 +30,7 @@ automation:
   - alias: Back Lanai Light Switches
     trigger:
       - platform: state
-        entity_id: switch.living_room_3
+        entity_id: light.living_room_1
         to:
       - platform: state
         entity_id: switch.garage_1

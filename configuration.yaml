@@ -4,8 +4,8 @@ homeassistant:
   allowlist_external_dirs:
     - /media
     - /share/camera
-    - /config/www/upcoming-media-card-images/plex/Recently_Added_Movie
-    - /config/www/upcoming-media-card-images/plex/Recently_Added_Show
+    # - /config/www/upcoming-media-card-images/plex/Recently_Added_Movie
+    # - /config/www/upcoming-media-card-images/plex/Recently_Added_Show
 
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
@@ -20,6 +20,7 @@ http:
     - 192.168.1.6
     - 172.30.33.0/24
     - 127.0.0.1
+    # - 172.70.211.0/16
   ip_ban_enabled: true
   login_attempts_threshold: 5
 
@@ -33,11 +34,10 @@ script: !include scripts.yaml
 scene: !include scenes.yaml
 sensor: !include sensor.yaml
 
-device_tracker:
-  - platform: bluetooth_tracker
-    new_device_defaults:
-      track_new_devices: true
-
+# device_tracker:
+#   - platform: bluetooth_tracker
+#     new_device_defaults:
+#       track_new_devices: true
 
 recorder:
   # db_url: !secret db_url
@@ -59,19 +59,19 @@ stream:
 
 logger:
   default: info
-  logs:
-    homeassistant.core: debug
-    homeassistant.components.zha: debug
-    bellows.zigbee.application: debug
-    bellows.ezsp: debug
-    zigpy: debug
-    zigpy_deconz.zigbee.application: debug
-    zigpy_deconz.api: debug
-    zigpy_xbee.zigbee.application: debug
-    zigpy_xbee.api: debug
-    zigpy_zigate: debug
-    zigpy_znp: debug
-    zhaquirks: debug
+  # logs:
+  # homeassistant.core: debug
+  # homeassistant.components.zha: debug
+  # bellows.zigbee.application: debug
+  # bellows.ezsp: debug
+  # zigpy: debug
+  # zigpy_deconz.zigbee.application: debug
+  # zigpy_deconz.api: debug
+  # zigpy_xbee.zigbee.application: debug
+  # zigpy_xbee.api: debug
+  # zigpy_zigate: debug
+  # zigpy_znp: debug
+  # zhaquirks: debug
 
 # light:
 #   - platform: group
@@ -106,7 +106,7 @@ media_source:
 zha:
   zigpy_config:
     network:
-      channel: 25             # What channel the radio should try to use.
+      channel: 25 # What channel the radio should try to use.
       channels: [15, 20, 25]
 
 wake_on_lan:

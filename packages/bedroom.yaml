@@ -1,59 +1,178 @@
 input_boolean:
-
   bedroom_auto:
     name: Bedroom Automation
     initial: on
     icon: mdi:home-automation
 
-mqtt:
-  switch:
-    - command_topic: shellies/shellyswitch25-E8DB84D6ED20/relay/0/command
-      name: Bedroom Shelly 1
-      payload_on: "on"
-      payload_off: "off"
-      qos: 1
-      state_topic: shellies/shellyswitch25-E8DB84D6ED20/relay/0
-      
-    - command_topic: shellies/shellyswitch25-E8DB84D6ED20/relay/1/command
-      name: Bedroom Shelly 2
-      payload_on: "on"
-      payload_off: "off"
-      qos: 1
-      state_topic: shellies/shellyswitch25-E8DB84D6ED20/relay/1
+# mqtt:
+#   switch:
+#     - command_topic: shellies/shellyswitch25-E8DB84D6ED20/relay/0/command
+#       name: Bedroom Shelly 1
+#       payload_on: "on"
+#       payload_off: "off"
+#       qos: 1
+#       state_topic: shellies/shellyswitch25-E8DB84D6ED20/relay/0
+
+#     - command_topic: shellies/shellyswitch25-E8DB84D6ED20/relay/1/command
+#       name: Bedroom Shelly 2
+#       payload_on: "on"
+#       payload_off: "off"
+#       qos: 1
+#       state_topic: shellies/shellyswitch25-E8DB84D6ED20/relay/1
 
 automation:
-  - alias: Bedroom Fan Switch
-    trigger:
-      - platform: state
-        entity_id: switch.bedroom_shelly_1
-        to:
-    action:
-      - service: fan.toggle
-        entity_id: fan.bedroom
+  # - alias: Bedroom Fan Switch
+  #   trigger:
+  #     - platform: state
+  #       entity_id: switch.bedroom_shelly_1
+  #       to:
+  #   action:
+  #     - service: fan.toggle
+  #       entity_id: fan.bedroom
 
-  - alias: Bedroom Light Switch
-    trigger:
-      - platform: state
-        entity_id: switch.bedroom_shelly_2
-        to:
-    action:
-      - service: light.turn_on
-        entity_id: light.bedroom_fan
-      - service: light.toggle
-        entity_id: light.bedroom
+  # - alias: Bedroom Light Switch
+  #   trigger:
+  #     - platform: state
+  #       entity_id: switch.bedroom_shelly_2
+  #       to:
+  #   action:
+  #     - service: light.turn_on
+  #       entity_id: light.bedroom_fan
+  #     - service: light.toggle
+  #       entity_id: light.bedroom
 
-  - alias: Bedroom Fan Light On if Off
+  # - alias: Bedroom Fan Light On if Off
+  #   trigger:
+  #     - platform: state
+  #       entity_id: switch.bedroom_shelly_2
+  #       to:
+  #   condition:
+  #     condition: state
+  #     entity_id: light.bedroom_fan
+  #     state: "off"
+  #   action:
+  #     - service: light.turn_on
+  #       entity_id: light.bedroom_fan
+
+  - alias: bedroom dimmer 1 --> 2
+    description: ""
     trigger:
       - platform: state
-        entity_id: switch.bedroom_shelly_2
-        to:
+        entity_id: light.bedroom_dimmer
     condition:
-      condition: state
-      entity_id: light.bedroom_fan
-      state: "off"
+      - condition: template
+        value_template: >
+          {{ not is_state_attr('light.bedroom_dimmer', 'brightness',
+          states.light.bedroom_bulb.attributes.brightness ) }}
     action:
-      - service: light.turn_on
-        entity_id: light.bedroom_fan
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: light.bedroom_dimmer
+                state: "off"
+            sequence:
+              - service: light.turn_off
+                target:
+                  entity_id: light.bedroom_bulb
+          - conditions:
+              - condition: state
+                entity_id: light.bedroom_dimmer
+                state: "on"
+            sequence:
+              - service: light.turn_on
+                target:
+                  entity_id: light.bedroom
+              - service: light.turn_on
+                target:
+                  entity_id: light.bedroom_bulb
+                data:
+                  brightness: "{{ trigger.to_state.attributes.brightness }}"
+        default: []
+    mode: single
+
+  - alias: Bedroom Fan High
+    trigger:
+      - platform: event
+        event_type: zha_event
+        event_data:
+          device_ieee: 54:ef:44:10:00:4b:60:eb
+          command: 41_single
+    condition: []
+    action:
+      - choose:
+          - conditions:
+              or:
+                - condition: state
+                  entity_id: fan.bedroom
+                  state: "off"
+                - condition: template
+                  value_template: "{{ state_attr('fan.bedroom', 'percentage') != 100 }}"
+            sequence:
+              - service: fan.set_percentage
+                data:
+                  percentage: 100
+                target:
+                  entity_id: fan.bedroom
+          - conditions:
+              - condition: state
+                entity_id: fan.bedroom
+                state: "on"
+              - condition: template
+                value_template: "{{ state_attr('fan.bedroom', 'percentage') == 100 }}"
+            sequence:
+              - service: fan.turn_off
+                target:
+                  entity_id: fan.bedroom
+    mode: single
+
+  - alias: Bedroom Fan Medium
+    trigger:
+      - platform: event
+        event_type: zha_event
+        event_data:
+          device_ieee: 54:ef:44:10:00:4b:60:eb
+          command: 42_single
+    condition: []
+    action:
+      - choose:
+          - conditions:
+              or:
+                - condition: state
+                  entity_id: fan.bedroom
+                  state: "off"
+                - condition: template
+                  value_template: "{{ state_attr('fan.bedroom', 'percentage') != 66 }}"
+            sequence:
+              - service: fan.set_percentage
+                data:
+                  percentage: 66
+                target:
+                  entity_id: fan.bedroom
+          - conditions:
+              - condition: state
+                entity_id: fan.bedroom
+                state: "on"
+              - condition: template
+                value_template: "{{ state_attr('fan.bedroom', 'percentage') == 66 }}"
+            sequence:
+              - service: fan.turn_off
+                target:
+                  entity_id: fan.bedroom
+    mode: single
+
+  # - alias: Bedroom Fan Medium
+  #   trigger:
+  #     - device_id: 24c5e67991d32bbb62fc0aab8ff7e811
+  #       domain: zha
+  #       platform: device
+  #       type: button_single
+  #       subtype: button_2
+  #   condition: []
+  #   action:
+  #     - service: fan.turn_on
+  #       data:
+  #         percentage: 66
+  #   mode: single
 
   - alias: Bedroom Auto Off
     trigger:

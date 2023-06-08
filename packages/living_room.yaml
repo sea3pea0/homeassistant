@@ -1,12 +1,10 @@
 input_boolean:
-
   living_room_auto:
     name: Living Room Automation
     initial: on
     icon: mdi:home-automation
 
 group:
-
   main_sensors:
     name: Main Occupancy
     entities:
@@ -14,18 +12,9 @@ group:
       - binary_sensor.front_entrance_occupancy
       - binary_sensor.kitchen_occupancy
       - binary_sensor.living_room_occupancy
-      - binary_sensor.pea_tv
 
 mqtt:
   switch:
-
-    - command_topic: shellies/shelly1pm-8CAAB55F8C3F/relay/0/command
-      name: Living Room 1
-      payload_on: "on"
-      payload_off: "off"
-      qos: 1
-      state_topic: shellies/shelly1pm-8CAAB55F8C3F/relay/0
-      json_attributes_topic: "shellies/shelly1pm-8CAAB55F8C3F/info"
     - command_topic: "shellies/shellyswitch25-E8DB84AB4931/relay/0/command"
       name: Side Entrance 1
       unique_id: "side_entrance_1"
@@ -50,39 +39,38 @@ light:
       - light.living_room_bulb_1
       - light.living_room_bulb_2
 
-input_select:
-
-  sofa_light_effect:
-    name: Sofa Light Effect
-    options:
-      - Fireplace
-      - Storm
-      - Rainbow
-      - Aura
-      - Police
-      - No Effect
-    initial: "No Effect"
+# input_select:
+#   sofa_light_effect:
+#     name: Sofa Light Effect
+#     options:
+#       - Fireplace
+#       - Storm
+#       - Rainbow
+#       - Aura
+#       - Police
+#       - No Effect
+#     initial: "No Effect"
 
 automation:
-
   - alias: Living Room Fan Switch
     trigger:
       - platform: state
-        entity_id: switch.side_entrance_1
+        entity_id: light.side_entrance_1
+        to:
+      # - platform: state
+      #   entity_id: switch.living_room_2
+      #   to:
     action:
       - service: fan.toggle
         entity_id: fan.living_room
 
   - alias: Living Room Light Switches
     trigger:
+      # - platform: state
+      #   entity_id: switch.living_room_1
+      #   to:
       - platform: state
-        entity_id: switch.living_room_1
-        to:
-      - platform: state
-        entity_id: switch.living_room_1
-        to:
-      - platform: state
-        entity_id: switch.side_entrance_2
+        entity_id: light.side_entrance_2
         to:
     action:
       - service: light.toggle
@@ -90,12 +78,9 @@ automation:
 
   - alias: Living Room Fan Light On if Off
     trigger:
-      - platform: state
-        entity_id: switch.living_room_1
-        to:
-      - platform: state
-        entity_id: switch.living_room_1
-        to:
+      # - platform: state
+      #   entity_id: switch.living_room_1
+      #   to:
       - platform: state
         entity_id: switch.side_entrance_2
         to:
@@ -112,37 +97,7 @@ automation:
       - service: light.turn_on
         entity_id: light.living_room_fan
 
-  - alias: Sofa Light 0H Time
-    trigger:
-      - platform: time
-        at: "00:00:00"
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: group.main_sensors
-          state: "on"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 50
-          rgbw_color: [100,50,0,0]
-        target:
-          entity_id: light.sofa
-
-  - alias: Living Room 0H Motion
+  - alias: Living Room Motion When Dark
     trigger:
       - platform: state
         entity_id:
@@ -152,785 +107,27 @@ automation:
     condition:
       condition: and
       conditions:
-        - condition: time
-          after: "23:59:59"
-          before: "01:00:00"
+        - condition: numeric_state
+          entity_id: sensor.living_room_illuminance
+          below: 3
+        - condition: state
+          entity_id: binary_sensor.pea_tv
+          state: "off"
         - condition: state
           entity_id: input_boolean.living_room_auto
           state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
+        # - condition: or
+        #   conditions:
+        #     - condition: state
+        #       entity_id: person.sea3pea0
+        #       state: "home"
+        #     - condition: state
+        #       entity_id: person.belka
+        #       state: "home"
     action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 50
-          rgbw_color: [100,50,0,0]
+      - service: switch.turn_on
         target:
-          entity_id: light.sofa
-
-  - alias: Sofa Light 1H Time
-    trigger:
-      - platform: time
-        at: "01:00:00"
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: group.main_sensors
-          state: "on"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 25
-          rgbw_color: [50,0,0,0]
-        target:
-          entity_id: light.sofa
-
-  - alias: Living Room 1H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - group.main_sensors
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "00:59:59"
-          before: "02:00:00"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          brightness: 25
-          rgbw_color: [50,0,0,0]
-        target:
-          entity_id: light.sofa
-
-  - alias: Sofa Light 2H Time
-    trigger:
-      - platform: time
-        at: "02:00:00"
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: group.main_sensors
-          state: "on"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 15
-          rgbw_color: [50,0,0,0]
-        target:
-          entity_id: light.sofa
-
-  - alias: Living Room 2H-5H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - group.main_sensors
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "01:59:59"
-          before: "05:00:00"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 15
-          rgbw_color: [50,0,0,0]
-        target:
-          entity_id: light.sofa
-
-  - alias: Sofa Light 5H Time
-    trigger:
-      - platform: time
-        at: "05:00:00"
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: group.main_sensors
-          state: "on"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 50
-          rgbw_color: [50,25,0,0]
-        target:
-          entity_id: light.sofa
-
-  - alias: Living Room 5H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - group.main_sensors
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "04:59:59"
-          before: "06:00:00"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 50
-          rgbw_color: [50,25,0,0]
-        target:
-          entity_id: light.sofa
-
-  - alias: Sofa Light 6H Time
-    trigger:
-      - platform: time
-        at: "06:00:00"
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: group.main_sensors
-          state: "on"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 255
-          rgbw_color: [255,255,255,255]
-        target:
-          entity_id: light.sofa
-
-  - alias: Living Room 6H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - group.main_sensors
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "05:59:59"
-          before: "07:00:00"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 255
-          rgbw_color: [255,255,255,255]
-        target:
-          entity_id: light.sofa
-
-  - alias: Sofa Light 7H Time
-    trigger:
-      - platform: time
-        at: "07:00:00"
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: group.main_sensors
-          state: "on"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 255
-          rgbw_color: [255,255,255,255]
-        target:
-          entity_id: light.sofa
-
-  - alias: Living Room 7H-9H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - group.main_sensors
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "06:59:59"
-          before: "09:00:00"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 255
-          rgbw_color: [255,255,255,255]
-        target:
-          entity_id: light.sofa
-
-  - alias: Sofa Light 18H Time
-    trigger:
-      - platform: sun
-        event: sunset
-        offset: "00:00:00"
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: group.main_sensors
-          state: "on"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 255
-          rgbw_color: [255,255,255,255]
-        target:
-          entity_id: light.sofa
-
-  - alias: Living Room 18H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - group.main_sensors
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: sun.sun
-          state: "below_horizon"
-        - condition: time
-          before: "19:00:00"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 255
-          rgbw_color: [255,255,255,255]
-        target:
-          entity_id: light.sofa
-
-  - alias: Sofa Light 19H Time
-    trigger:
-      - platform: time
-        at: "19:00:00"
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: group.main_sensors
-          state: "on"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 255
-          rgbw_color: [255,255,255,255]
-        target:
-          entity_id: light.sofa
-
-  - alias: Living Room 19H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - group.main_sensors
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "18:59:59"
-          before: "20:00:00"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 255
-          rgbw_color: [255,255,255,255]
-        target:
-          entity_id: light.sofa
-
-  - alias: Sofa Light 20H Time
-    trigger:
-      - platform: time
-        at: "20:00:00"
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: group.main_sensors
-          state: "on"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 225
-          rgbw_color: [255,225,155,155]
-        target:
-          entity_id: light.sofa
-
-  - alias: Living Room 20H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - group.main_sensors
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "19:59:59"
-          before: "21:00:00"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 225
-          rgbw_color: [255,225,155,155]
-        target:
-          entity_id: light.sofa
-
-  - alias: Sofa Light 21H Time
-    trigger:
-      - platform: time
-        at: "21:00:00"
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: group.main_sensors
-          state: "on"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 175
-          rgbw_color: [255,225,0,0]
-        target:
-          entity_id: light.sofa
-
-  - alias: Living Room 21H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - group.main_sensors
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "20:59:59"
-          before: "22:00:00"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 175
-          rgbw_color: [255,225,0,0]
-        target:
-          entity_id: light.sofa
-
-  - alias: Sofa Light 22H Time
-    trigger:
-      - platform: time
-        at: "22:00:00"
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: group.main_sensors
-          state: "on"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 100
-          rgbw_color: [175,100,0,0]
-        target:
-          entity_id: light.sofa
-
-  - alias: Living Room 22H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - group.main_sensors
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "21:59:59"
-          before: "23:00:00"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 100
-          rgbw_color: [175,100,0,0]
-        target:
-          entity_id: light.sofa
-
-  - alias: Sofa Light 23H Time
-    trigger:
-      - platform: time
-        at: "23:00:00"
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: group.main_sensors
-          state: "on"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 75
-          rgbw_color: [155,50,0,0]
-        target:
-          entity_id: light.sofa
-
-  - alias: Living Room 23H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - group.main_sensors
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "22:59:59"
-          before: "00:00:00"
-        - condition: state
-          entity_id: input_boolean.living_room_auto
-          state: "on"
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: person.sea3pea0
-              state: "home"
-            - condition: state
-              entity_id: person.belka
-              state: "home"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          brightness: 75
-          rgbw_color: [155,50,0,0]
-        target:
-          entity_id: light.sofa
-
-
-  - alias: Sofa Light Effect
-    trigger:
-      - platform: state
-        entity_id: input_select.sofa_light_effect
-    action:
-      - variables:
-          effect: >
-            {% if trigger.to_state.state == "Fireplace" %}
-              6
-            {% elif trigger.to_state.state == "Storm" %}
-              7
-            {% elif trigger.to_state.state == "Rainbow" %}
-              8
-            {% elif trigger.to_state.state == "Aura" %}
-              9
-            {% elif trigger.to_state.state == "Police" %}
-              10
-            {% elif trigger.to_state.state == "No Effect" %}
-              1
-            {% endif %}
-      - service: zwave_js.set_config_parameter
-        data_template:
-          entity_id: light.sofa
-          parameter: 72
-          value: "{{ effect|int }}"
-
-  - alias: Away Night Fireplace
-    trigger:
-      - platform: state
-        entity_id: group.people
-        to: "not_home"
-    condition:
-      condition: and
-      conditions:
-        - condition: sun
-          after: sunset
-          before: sunrise
-    action:
-      - service: zwave_js.set_config_parameter
-        data_template:
-          entity_id: light.sofa_rgbw
-          parameter: 72
-          value: 6
-
-  - alias: Night Fireplace
-    trigger:
-      - platform: sun
-        event: sunset
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: group.people
-          state: "not_home"
-    action:
-      - service: zwave_js.set_config_parameter
-        data_template:
-          entity_id: light.sofa_rgbw
-          parameter: 72
-          value: 6
+          entity_id: switch.living_room_lamp
 
   - alias: Living Room Auto Off
     trigger:
@@ -939,19 +136,30 @@ automation:
           - group.main_sensors
         from: "on"
         to: "off"
-      - platform: time
-        at: "09:00:00"
     condition:
       - condition: state
         entity_id: input_boolean.living_room_auto
         state: "on"
+      - condition: state
+        entity_id: binary_sensor.pea_tv
+        state: "off"
     action:
-      - service: light.turn_off
+      - service: homeassistant.turn_off
         entity_id:
-          - light.sofa
           - light.living_room
+          - switch.living_room_lamp
       - service: media_player.turn_off
         entity_id: media_player.pea_tv
+
+  - alias: Turn Living Room Lamp off when Pea TV On
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.pea_tv
+        to: "on"
+        from: "off"
+    action:
+      - service: switch.turn_off
+        entity_id: switch.living_room_lamp
 
   - alias: Living Room Light Button Short Press
     trigger:

@@ -1,12 +1,10 @@
 input_boolean:
-
   kitchen_auto:
     name: Kitchen Automation
     initial: on
     icon: mdi:home-automation
 
 group:
-
   kitchen_sink_cabinet_flood:
     name: Kitchen Sink Cabinet Flood
     entities:
@@ -14,106 +12,105 @@ group:
       - binary_sensor.kitchen_sink_cabinet_2_flood
 
 automation:
+  # - alias: Kitchen 0H Motion
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - binary_sensor.kitchen_occupancy
+  #       from: "off"
+  #       to: "on"
+  #   condition:
+  #     condition: and
+  #     conditions:
+  #       - condition: state
+  #         entity_id: binary_sensor.kitchen_occupancy
+  #         state: "on"
+  #       - condition: time
+  #         after: "23:59:59"
+  #         before: "01:00:00"
+  #       - condition: state
+  #         entity_id: input_boolean.kitchen_auto
+  #         state: "on"
+  #   action:
+  #     - service: light.turn_on
+  #       data:
+  #         transition: 15
+  #         entity_id: light.kitchen_corner
+  #         brightness: 1
 
-  - alias: Kitchen 0H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - binary_sensor.kitchen_occupancy
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: binary_sensor.kitchen_occupancy
-          state: "on"
-        - condition: time
-          after: "23:59:59"
-          before: "01:00:00"
-        - condition: state
-          entity_id: input_boolean.kitchen_auto
-          state: "on"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          entity_id: light.kitchen_corner
-          brightness: 1
+  # - alias: Kitchen 1H Motion
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - binary_sensor.kitchen_occupancy
+  #       from: "off"
+  #       to: "on"
+  #   condition:
+  #     condition: and
+  #     conditions:
+  #       - condition: time
+  #         after: "00:59:59"
+  #         before: "02:00:00"
+  #       - condition: state
+  #         entity_id: input_boolean.kitchen_auto
+  #         state: "on"
+  #   action:
+  #     - service: light.turn_on
+  #       data:
+  #         entity_id: light.kitchen_corner
+  #         brightness: 1
 
-  - alias: Kitchen 1H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - binary_sensor.kitchen_occupancy
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "00:59:59"
-          before: "02:00:00"
-        - condition: state
-          entity_id: input_boolean.kitchen_auto
-          state: "on"
-    action:
-      - service: light.turn_on
-        data:
-          entity_id: light.kitchen_corner
-          brightness: 1
+  # - alias: Kitchen 2H-5H Motion
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - binary_sensor.kitchen_occupancy
+  #       from: "off"
+  #       to: "on"
+  #   condition:
+  #     condition: and
+  #     conditions:
+  #       - condition: numeric_state
+  #         entity_id: sensor.kitchen_illuminance
+  #         below: 5
+  #       - condition: time
+  #         after: "01:59:59"
+  #         before: "05:00:00"
+  #       - condition: state
+  #         entity_id: input_boolean.kitchen_auto
+  #         state: "on"
+  #   action:
+  #     - service: light.turn_on
+  #       data:
+  #         transition: 15
+  #         entity_id: light.kitchen_corner
+  #         brightness: 1
 
-  - alias: Kitchen 2H-5H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - binary_sensor.kitchen_occupancy
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: numeric_state
-          entity_id: sensor.kitchen_illuminance
-          below: 5
-        - condition: time
-          after: "01:59:59"
-          before: "05:00:00"
-        - condition: state
-          entity_id: input_boolean.kitchen_auto
-          state: "on"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          entity_id: light.kitchen_corner
-          brightness: 1
-
-  - alias: Kitchen 5H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - binary_sensor.kitchen_occupancy
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: numeric_state
-          entity_id: sensor.kitchen_illuminance
-          below: 5
-        - condition: time
-          after: "04:59:59"
-          before: "06:00:00"
-        - condition: state
-          entity_id: input_boolean.kitchen_auto
-          state: "on"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          entity_id: light.kitchen_corner
-          brightness: 50
+  # - alias: Kitchen 5H Motion
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - binary_sensor.kitchen_occupancy
+  #       from: "off"
+  #       to: "on"
+  #   condition:
+  #     condition: and
+  #     conditions:
+  #       - condition: numeric_state
+  #         entity_id: sensor.kitchen_illuminance
+  #         below: 5
+  #       - condition: time
+  #         after: "04:59:59"
+  #         before: "06:00:00"
+  #       - condition: state
+  #         entity_id: input_boolean.kitchen_auto
+  #         state: "on"
+  #   action:
+  #     - service: light.turn_on
+  #       data:
+  #         transition: 15
+  #         entity_id: light.kitchen_corner
+  #         brightness: 50
 
   - alias: Kitchen 6H-20H Motion
     trigger:
@@ -121,7 +118,7 @@ automation:
         entity_id:
           - binary_sensor.kitchen_pir
         from: "off"
-        to : "on"
+        to: "on"
     condition:
       condition: and
       conditions:
@@ -138,105 +135,105 @@ automation:
     action:
       - service: light.turn_on
         entity_id: light.kitchen
-      - service: light.turn_on
-        data:
-          transition: 15
-          entity_id: light.kitchen_corner
-          brightness: 255
+      # - service: light.turn_on
+      #   data:
+      #     transition: 15
+      #     entity_id: light.kitchen_corner
+      #     brightness: 255
 
-  - alias: Kitchen 20H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - binary_sensor.kitchen_occupancy
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "19:59:59"
-          before: "21:00:00"
-        - condition: state
-          entity_id: input_boolean.kitchen_auto
-          state: "on"
-    action:
-      - service: light.turn_on
-        entity_id: light.kitchen
-      - service: light.turn_on
-        data:
-          transition: 15
-          entity_id: light.kitchen_corner
-          brightness: 225
+  # - alias: Kitchen 20H Motion
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - binary_sensor.kitchen_occupancy
+  #       from: "off"
+  #       to: "on"
+  #   condition:
+  #     condition: and
+  #     conditions:
+  #       - condition: time
+  #         after: "19:59:59"
+  #         before: "21:00:00"
+  #       - condition: state
+  #         entity_id: input_boolean.kitchen_auto
+  #         state: "on"
+  #   action:
+  #     - service: light.turn_on
+  #       entity_id: light.kitchen
+  #     - service: light.turn_on
+  #       data:
+  #         transition: 15
+  #         entity_id: light.kitchen_corner
+  #         brightness: 225
 
-  - alias: Kitchen 21H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - binary_sensor.kitchen_occupancy
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "20:59:59"
-          before: "22:00:00"
-        - condition: state
-          entity_id: input_boolean.kitchen_auto
-          state: "on"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          entity_id: light.kitchen_corner
-          brightness: 175
+  # - alias: Kitchen 21H Motion
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - binary_sensor.kitchen_occupancy
+  #       from: "off"
+  #       to: "on"
+  #   condition:
+  #     condition: and
+  #     conditions:
+  #       - condition: time
+  #         after: "20:59:59"
+  #         before: "22:00:00"
+  #       - condition: state
+  #         entity_id: input_boolean.kitchen_auto
+  #         state: "on"
+  #   action:
+  #     - service: light.turn_on
+  #       data:
+  #         transition: 15
+  #         entity_id: light.kitchen_corner
+  #         brightness: 175
 
-  - alias: Kitchen 22H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - binary_sensor.kitchen_occupancy
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "21:59:59"
-          before: "23:00:00"
-        - condition: state
-          entity_id: input_boolean.kitchen_auto
-          state: "on"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          entity_id: light.kitchen_corner
-          brightness: 100
+  # - alias: Kitchen 22H Motion
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - binary_sensor.kitchen_occupancy
+  #       from: "off"
+  #       to: "on"
+  #   condition:
+  #     condition: and
+  #     conditions:
+  #       - condition: time
+  #         after: "21:59:59"
+  #         before: "23:00:00"
+  #       - condition: state
+  #         entity_id: input_boolean.kitchen_auto
+  #         state: "on"
+  #   action:
+  #     - service: light.turn_on
+  #       data:
+  #         transition: 15
+  #         entity_id: light.kitchen_corner
+  #         brightness: 100
 
-  - alias: Kitchen 23H Motion
-    trigger:
-      - platform: state
-        entity_id:
-          - binary_sensor.kitchen_occupancy
-        from: "off"
-        to: "on"
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: "22:59:59"
-          before: "00:00:00"
-        - condition: state
-          entity_id: input_boolean.kitchen_auto
-          state: "on"
-    action:
-      - service: light.turn_on
-        data:
-          transition: 15
-          entity_id: light.kitchen_corner
-          brightness: 75
+  # - alias: Kitchen 23H Motion
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - binary_sensor.kitchen_occupancy
+  #       from: "off"
+  #       to: "on"
+  #   condition:
+  #     condition: and
+  #     conditions:
+  #       - condition: time
+  #         after: "22:59:59"
+  #         before: "00:00:00"
+  #       - condition: state
+  #         entity_id: input_boolean.kitchen_auto
+  #         state: "on"
+  #   action:
+  #     - service: light.turn_on
+  #       data:
+  #         transition: 15
+  #         entity_id: light.kitchen_corner
+  #         brightness: 75
 
   - alias: Kitchen Auto Off
     trigger:
@@ -251,7 +248,7 @@ automation:
         state: "on"
     action:
       - service: light.turn_off
-        entity_id: 
+        entity_id:
           - light.kitchen
           - light.kitchen_corner
 
@@ -313,7 +310,6 @@ automation:
           - light.kitchen_corner
 
 alert:
-
   kitchen_sink_cabinet_flood:
     name: Kitchen Sink Cabinet Flood
     message: "💧 Kitchen Sink Cabinet Flood Detected"

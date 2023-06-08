@@ -1,5 +1,4 @@
 input_boolean:
-
   office_auto:
     name: Office Automation
     initial: on
@@ -7,23 +6,22 @@ input_boolean:
 
 mqtt:
   switch:
-
-    - command_topic: "shellies/shellyswitch25-E8DB84A241EE/relay/0/command"
-      name: Office 1
-      unique_id: "shellyswitch25-E8DB84A241EE-switch-0"
-      payload_on: "on"
-      payload_off: "off"
-      qos: 1
-      state_topic: "shellies/shellyswitch25-E8DB84A241EE/relay/0"
-      json_attributes_topic: "shellies/shellyswitch25-E8DB84A241EE/info"
-    - command_topic: "shellies/shellyswitch25-E8DB84A241EE/relay/1/command"
-      name: Office 2
-      unique_id: "shellyswitch25-E8DB84A241EE-switch-1"
-      payload_on: "on"
-      payload_off: "off"
-      qos: 1
-      state_topic: "shellies/shellyswitch25-E8DB84A241EE/relay/1"
-      json_attributes_topic: "shellies/shellyswitch25-E8DB84A241EE/info"
+    # - command_topic: "shellies/shellyswitch25-E8DB84A241EE/relay/0/command"
+    #   name: Office 1
+    #   unique_id: "shellyswitch25-E8DB84A241EE-switch-0"
+    #   payload_on: "on"
+    #   payload_off: "off"
+    #   qos: 1
+    #   state_topic: "shellies/shellyswitch25-E8DB84A241EE/relay/0"
+    #   json_attributes_topic: "shellies/shellyswitch25-E8DB84A241EE/info"
+    # - command_topic: "shellies/shellyswitch25-E8DB84A241EE/relay/1/command"
+    #   name: Office 2
+    #   unique_id: "shellyswitch25-E8DB84A241EE-switch-1"
+    #   payload_on: "on"
+    #   payload_off: "off"
+    #   qos: 1
+    #   state_topic: "shellies/shellyswitch25-E8DB84A241EE/relay/1"
+    #   json_attributes_topic: "shellies/shellyswitch25-E8DB84A241EE/info"
     - command_topic: shellies/shelly1pm-84CCA89F8756/relay/0/command
       name: Office 3
       unique_id: "shelly1pm-84CCA89F8756-switch-0"
@@ -37,7 +35,7 @@ automation:
   - alias: Office Fan Switch
     trigger:
       - platform: state
-        entity_id: switch.office_2
+        entity_id: light.office_2
         to:
     action:
       - service: fan.toggle
@@ -49,7 +47,7 @@ automation:
         entity_id: switch.office_3
         to:
       - platform: state
-        entity_id: switch.office_1
+        entity_id: light.office_1
         to:
     action:
       - service: light.toggle
@@ -61,7 +59,7 @@ automation:
         entity_id:
           - binary_sensor.office_pir
         from: "off"
-        to : "on"
+        to: "on"
     condition:
       condition: and
       conditions:

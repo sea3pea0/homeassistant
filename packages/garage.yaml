@@ -108,8 +108,7 @@ automation:
       - condition: state
         entity_id: input_boolean.garage_auto
         state:
-          - "off"
-          - "unavailable"
+          - "on"
       - condition: state
         entity_id: binary_sensor.garage_door
         state:
@@ -117,7 +116,9 @@ automation:
           - "unavailable"
       - condition: state
         entity_id: binary_sensor.garage_back_lanai_door
-        state: "off"
+        state:
+          - "off"
+          - "unavailable"
         for:
           hours: 0
           minutes: 3
